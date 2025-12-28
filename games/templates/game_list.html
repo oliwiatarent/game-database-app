@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        img {
+            border-radius: 5%;
+        }
+
+        img:hover {
+            -webkit-filter: brightness(80%);
+        }
+
+        .games-list {
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+{% load static %}
+
+<h1>Lista gier</h1>
+
+<ul>
+    <div class="games-list">
+        {% for game in games %}
+            <a href="/game?id={{ game.id }}">
+                <img src="{% static game.boxart %}"
+                     alt="{{ game.title }}"
+                     style="height:300px">
+            </a>
+        {% endfor %}
+    </div>
+</ul>
+
+</body>
+</html>

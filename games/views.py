@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.template import loader
 from dotenv import dotenv_values
 import oracledb
 
@@ -10,13 +11,19 @@ def games(request):
     password = config["PASSWD"]
     cs = config["CS"]
 
+    games_list = []
+
     with oracledb.connect(user=username, password=password, dsn=cs) as connection:
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM {username}.gry")
+            cursor.execute(f"SELECT id, tytul, okladka FROM {username}.gry")
 
-            html = "<h1>Lista gier</h1><ul>"
-            for item in cursor:
-                html += f"<li>{item}</li>"
-            html += "</ul>"
+            for id, tytul, okladka in cursor:
+                 games_list.append({
+                    "id": id,
+                    "title": tytul,
+                    "boxart": okladka
+                 })
 
-    return HttpResponse(html)
+    return render(request, "game_list.html", {
+        "games": games_list
+    })
