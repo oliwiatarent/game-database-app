@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static styles.css %}">
+
+</head>
+
+<body>
+
+{% load static %}
+
+<div class="navbar">
+
+</div>
+
+<div class="games-details">
+    <ul>
+        {% for attribute in game %}
+            <li>{{ attribute }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>

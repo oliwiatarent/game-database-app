@@ -1,0 +1,23 @@
+body {
+    font-family: "Arial";
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    border-radius: 5%;
+}
+
+img:hover {
+    -webkit-filter: brightness(80%);
+}
+
+.games-list {
+    text-align: center;
+}
+
+.navbar {
+    margin: 0 3% 0 3%;
+}

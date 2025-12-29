@@ -1,15 +1,14 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.template import loader
 from dotenv import dotenv_values
 import oracledb
 
+config = dotenv_values(".env")
+username = config["USERNAME"]
+password = config["PASSWD"]
+cs = config["CS"]
 
-def games(request):
-    config = dotenv_values(".env")
-    username = config["USERNAME"]
-    password = config["PASSWD"]
-    cs = config["CS"]
+
+def game_list(request):
 
     games_list = []
 
@@ -26,4 +25,21 @@ def games(request):
 
     return render(request, "game_list.html", {
         "games": games_list
+    })
+
+
+def game(request, id):
+    game = []
+
+    with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(f"SELECT * FROM {username}.gry WHERE id = {id}")
+
+            for item in cursor:
+                for attribute in item:
+                    game.append(attribute)
+
+
+    return render(request, "game.html", {
+        "game": game
     })
