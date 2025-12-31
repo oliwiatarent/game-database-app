@@ -29,15 +29,28 @@ def game_list(request):
 
 
 def game(request, id):
-    game = []
+
+    game = {}
+    columns = []
 
     with oracledb.connect(user=username, password=password, dsn=cs) as connection:
         with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT column_name 
+                FROM user_tab_columns 
+                WHERE table_name = 'GRY'
+            """)
+
+            for column in cursor:
+                columns.append(column[0].lower())
+
             cursor.execute(f"SELECT * FROM {username}.gry WHERE id = {id}")
 
             for item in cursor:
-                for attribute in item:
-                    game.append(attribute)
+                for i in range(len(item)):
+                    game[columns[i]] = item[i]
+
+            print(game)
 
 
     return render(request, "game.html", {

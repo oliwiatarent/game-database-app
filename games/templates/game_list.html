@@ -10,20 +10,19 @@
 
 <body>
 
+    <div class="navbar">
+        <h1>Wszystkie gry</h1>
+    </div>
 
-<div class="navbar">
-    <h1>Wszystkie gry</h1>
-</div>
-
-<div class="games-list">
-    {% for game in games %}
-        <a href="{% url 'game' game.id %}">
-            <img src="{% static game.boxart %}"
-                 alt="{{ game.title }}"
-                 style="height:300px">
-        </a>
-    {% endfor %}
-</div>
+    <div class="games-list">
+        {% for game in games %}
+            <a href="{% url 'game' game.id %}">
+                <img src="{% static game.boxart %}"
+                     alt="{{ game.title }}"
+                     class="games-list-img">
+            </a>
+        {% endfor %}
+    </div>
 
 </body>
 </html>

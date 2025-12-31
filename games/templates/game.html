@@ -4,25 +4,34 @@
 
     {% load static %}
 
-    <link rel="stylesheet" href="{% static styles.css %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
 </head>
 
 <body>
 
-{% load static %}
+    <div class="navbar">
 
-<div class="navbar">
+    </div>
 
-</div>
+    <div class="games-details">
+        <table>
+            <tr>
+                <td rowspan="2">
+                    <img src="{% static game.okladka %}">
+                </td>
+                <th>
+                    <h4>{{ game.tytul }}</h4>
+                </th>
+            </tr>
 
-<div class="games-details">
-    <ul>
-        {% for attribute in game %}
-            <li>{{ attribute }}</li>
-        {% endfor %}
-    </ul>
-</div>
+            <tr>
+                <td>
+                    <p>{{ game.opis }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
 
 </body>
 </html>

@@ -1,9 +1,9 @@
-body {
-    font-family: "Arial";
-}
-
 a {
     text-decoration: none;
+}
+
+body {
+    font-family: "Arial";
 }
 
 img {
@@ -14,8 +14,17 @@ img:hover {
     -webkit-filter: brightness(80%);
 }
 
+table {
+    margin: 5%;
+}
+
 .games-list {
     text-align: center;
+}
+
+.games-list-img {
+    height: 300px;
+    width: auto;
 }
 
 .navbar {
