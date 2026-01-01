@@ -22,37 +22,45 @@
                         alt="{{ game.tytul }}">
                 </td>
 
-                <th colspan="2">
+                <th colspan="4">
                     <h4>{{ game.tytul }}</h4>
                 </th>
             </tr>
 
             <tr>
-                <td colspan="2">
+                <td colspan="4">
                     <p>{{ game.opis }}</p>
                 </td>
             </tr>
 
             <tr>
-                <td>
+                <td class="details-td">
                     <p>Release date:</p>
                 </td>
 
-                <td>
+                <td class="details-td">
                     <p>{{ game.data_wydania }}</p>
                 </td>
 
-                <td>
+                <td class="details-td">
                     <p>Developer:</p>
                 </td>
 
-                <td>
+                <td class="details-td">
                     <p>{{ game.deweloper }}</p>
+                </td>
+
+                <td class="details-td">
+                    <p>Genres:</p>
+                </td>
+
+                <td class="details-td">
+                    <p>{{ game.gatunki }}</p>
                 </td>
             </tr>
 
             <tr>
-                <td>
+                <td class="details-td">
                     <p>Age rating:</p>
                 </td>
 
@@ -68,6 +76,24 @@
 
                 <td>
                     <p>{{ game.franczyza }}</p>
+                </td>
+
+                <td>
+                    <p>Platformy:</p>
+                </td>
+
+                <td>
+                    <p>{{ game.platformy }}</p>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <p>Rating:</p>
+                </td>
+
+                <td>
+                    <p>5.0</p>
                 </td>
             </tr>
         </table>

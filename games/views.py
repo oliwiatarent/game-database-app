@@ -51,11 +51,15 @@ def game(request, id):
 
                     if columns[i] == "ograniczenie_wiekowe":
                         attribute = 'img/age_ratings/' + str(item[i]) + '.png'
+                    elif columns[i] == "data_wydania":
+                        attribute = item[i].date
                     else:
                         attribute = item[i]
 
                     game[columns[i]] = attribute
 
+
+            # Przetwarzanie dewelopera
             cursor.execute(f"""
                 SELECT nazwa 
                 FROM {username}.gry g INNER JOIN deweloperzy d ON d.id = g.deweloper
@@ -64,6 +68,40 @@ def game(request, id):
 
             for item in cursor:
                 game["deweloper"] = item[0]
+
+
+            # Przetwarzanie gatunków
+            cursor.execute(f"""
+                SELECT nazwa_gatunku 
+                FROM Gry_Gatunki
+                WHERE ID_Gry = {id}
+            """)
+
+            genres_list = []
+            for item in cursor:
+                genres_list.append(item[0])
+
+            if len(genres_list) == 0:
+                game["gatunki"] = "None"
+            else:
+                game["gatunki"] = ', '.join(genres_list)
+
+
+            # Przetwarzanie platform
+            cursor.execute(f"""
+                SELECT nazwa_platformy 
+                FROM Gry_Platformy
+                WHERE ID_Gry = {id}
+            """)
+
+            platform_list = []
+            for item in cursor:
+                platform_list.append(item[0])
+
+            if len(platform_list) == 0:
+                game["platformy"] = "None"
+            else:
+                game["platformy"] = ', '.join(platform_list)
 
 
     return render(request, "game.html", {

@@ -19,6 +19,10 @@ table, th, td {
     width: auto;
 }
 
+.details-td {
+    width: 16%;
+}
+
 .games-list {
     text-align: center;
 }
