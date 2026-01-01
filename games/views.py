@@ -48,9 +48,22 @@ def game(request, id):
 
             for item in cursor:
                 for i in range(len(item)):
-                    game[columns[i]] = item[i]
 
-            print(game)
+                    if columns[i] == "ograniczenie_wiekowe":
+                        attribute = 'img/age_ratings/' + str(item[i]) + '.png'
+                    else:
+                        attribute = item[i]
+
+                    game[columns[i]] = attribute
+
+            cursor.execute(f"""
+                SELECT nazwa 
+                FROM {username}.gry g INNER JOIN deweloperzy d ON d.id = g.deweloper
+                WHERE g.id = {id}
+            """)
+
+            for item in cursor:
+                game["deweloper"] = item[0]
 
 
     return render(request, "game.html", {

@@ -6,16 +6,17 @@ body {
     font-family: "Arial";
 }
 
-img {
-    border-radius: 5%;
-}
-
-img:hover {
-    -webkit-filter: brightness(80%);
-}
-
 table {
     margin: 5%;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+.age-rating-img {
+    height: 70px;
+    width: auto;
 }
 
 .games-list {
@@ -25,8 +26,18 @@ table {
 .games-list-img {
     height: 300px;
     width: auto;
+    border-radius: 5%;
+}
+
+.games-list-img:hover {
+    -webkit-filter: brightness(80%);
 }
 
 .navbar {
     margin: 0 3% 0 3%;
+}
+
+.table-img {
+    width: 30%;
+    text-align: center;
 }
