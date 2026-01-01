@@ -95,7 +95,20 @@
                 <td>
                     <p>5.0</p>
                 </td>
+
+                {% if game.dodatek %}
+                    <td colspan="2">
+                        <p>Base game:</p>
+                    </td>
+
+                    <td colspan="2">
+                        <a href="{% url 'game' game.gra_podstawowa %}">
+                            {{ game.tytul_gry_podstawowej }}
+                        </a>
+                    </td>
+                {% endif %}
             </tr>
+
         </table>
     </div>
 

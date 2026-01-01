@@ -104,6 +104,18 @@ def game(request, id):
                 game["platformy"] = ', '.join(platform_list)
 
 
+            # Przetwarzanie gry podstawowej dla dodatków
+            if game["dodatek"] == 1:
+                cursor.execute(f"""
+                    SELECT tytul 
+                    FROM Gry
+                    WHERE ID = {game["gra_podstawowa"]}
+                """)
+
+                for item in cursor:
+                    game["tytul_gry_podstawowej"] = item[0]
+
+
     return render(request, "game.html", {
         "game": game
     })
