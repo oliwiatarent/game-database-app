@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {% load static %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid game-form">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="inputTitle" class="form-label">Game title</label>
+                <input type="text" class="form-control" id="inputTitle" name="title" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="releaseDate" class="form-label">Release date</label>
+                        <input type="date" class="form-control" id="releaseDate" name="releaseDate" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="ageRating" class="form-label">Age rating</label>
+                        <select class="form-control" id="ageRating" name="ageRating">
+                            <option value="3">3</option>
+                            <option value="7">7</option>
+                            <option value="12">12</option>
+                            <option value="16">16</option>
+                            <option value="18">18</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="genres" class="form-label">Platforms</label>
+                        <select class="form-control" id="platforms" name="platforms" size="8" multiple>
+                            {% for platform in platforms %}
+                                <option value="{{ platform.nazwa }}">{{ platform.nazwa }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="genres" class="form-label">Genres</label>
+                        <select class="form-control" id="genres" name="genres" size="8" multiple>
+                            {% for genre in genres %}
+                                <option value="{{ genre.nazwa }}">{{ genre.nazwa }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="boxart" class="form-label">Boxart</label>
+                        <input type="text" class="form-control" id="boxart" name="boxart">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="developer" class="form-label">Developer</label>
+                        <select class="form-control" id="developer" name="developer">
+                            <option value="Brak">Brak</option>
+                            {% for developer in developers %}
+                                {% if developer.nazwa != 'Brak' %}
+                                    <option value="{{ developer.nazwa }}">{{ developer.nazwa }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="franchise" class="form-label">Franchise</label>
+                <select class="form-control" id="franchise" name="franchise">
+                    <option value="Brak">Brak</option>
+                    {% for franchise in franchises %}
+                        {% if franchise.nazwa != 'Brak' %}
+                            <option value="{{ franchise.nazwa }}">{{ franchise.nazwa }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" class="form-control" id="description" name="description">
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="dlc" name="dlc">
+                <label class="form-check-label" for="dlc">DLC</label>
+            </div>
+
+            <div class="mb-3 hidden" id="dlcBaseGameContainer">
+                <label for="dlcBaseGame" class="form-label">Base Game</label>
+                <select class="form-control" id="dlcBaseGame" name="dlcBaseGame">
+                    <option value="Brak">Brak</option>
+                    {% for baseGame in baseGames %}
+                        <option value="{{ baseGame.tytul }}">{{ baseGame.tytul }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Dodaj grę</button>
+        </form>
+    </div>
+
+    <script>
+        var checkbox = document.getElementById('dlc');
+        var baseGame = document.getElementById('dlcBaseGameContainer');
+
+        checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    baseGame.classList.remove('hidden');
+                } else {
+                    baseGame.classList.add('hidden');
+                }
+        })
+    </script>
+</body>
+</html>

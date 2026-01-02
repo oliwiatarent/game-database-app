@@ -23,6 +23,11 @@ table, th, td {
     width: 16%;
 }
 
+.game-form {
+    max-width: 80%;
+    margin: 2% 10%;
+}
+
 .games-list {
     text-align: center;
 }
@@ -31,13 +36,19 @@ table, th, td {
     height: 300px;
     width: auto;
     border-radius: 5%;
+    margin-top: 10px;
 }
 
 .games-list-img:hover {
     -webkit-filter: brightness(80%);
 }
 
-.navbar {
+.hidden {
+    display: none;
+}
+
+.navbar,
+.games-list {
     margin: 0 3% 0 3%;
 }
 
