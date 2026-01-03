@@ -188,6 +188,7 @@ def game_form(request):
 
         return redirect('games')
 
+
     developers = []
     franchises = []
     baseGames = []

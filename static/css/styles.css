@@ -8,10 +8,8 @@ body {
 
 table {
     margin: 5%;
-}
-
-table, th, td {
-  border: 1px solid black;
+    border-collapse: separate;
+    border-spacing: 3px;
 }
 
 .age-rating-img {
@@ -19,8 +17,26 @@ table, th, td {
     width: auto;
 }
 
-.details-td {
+.details-td-left {
+    border-radius: 10px 0 0 10px;
+    font-weight: bold;
+}
+
+.details-td-right {
+    border-radius: 0 10px 10px 0;
+}
+
+.details-td-left,
+.details-td-right {
     width: 16%;
+    height: 100%;
+    text-align: center;
+    border: 2px solid black;
+}
+
+.details-td-left > div,
+.details-td-right > div {
+    margin: 10px;
 }
 
 .game-form {
@@ -41,6 +57,20 @@ table, th, td {
 
 .games-list-img:hover {
     -webkit-filter: brightness(80%);
+}
+
+.game-title {
+    text-align: center;
+}
+
+.game-title > h4 {
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+.game-description > p {
+    padding: 3%;
+    text-align: justify; 
 }
 
 .hidden {

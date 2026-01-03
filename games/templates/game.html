@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="games-details">
+    <div class="game-details">
         <table>
             <tr>
                 <td rowspan="2" colspan="2" class="table-img">
@@ -28,89 +28,121 @@
                         alt="{{ game.tytul }}">
                 </td>
 
-                <th colspan="4">
+                <th colspan="4" class="game-title">
                     <h4>{{ game.tytul }}</h4>
                 </th>
             </tr>
 
             <tr>
-                <td colspan="4">
+                <td colspan="4" class="game-description">
                     <p>{{ game.opis }}</p>
                 </td>
             </tr>
 
             <tr>
-                <td class="details-td">
-                    <p>Release date:</p>
+                <td class="details-td-left">
+                    <div>
+                        <p>Release date:</p>
+                    </div>
                 </td>
 
-                <td class="details-td">
-                    <p>{{ game.data_wydania }}</p>
+                <td class="details-td-right">
+                    <div>
+                        <p>{{ game.data_wydania }}</p>
+                    </div>
                 </td>
 
-                <td class="details-td">
-                    <p>Developer:</p>
+                <td class="details-td-left">
+                    <div>
+                        <p>Developer:</p>
+                    </div>
                 </td>
 
-                <td class="details-td">
-                    <p>{{ game.deweloper }}</p>
+                <td class="details-td-right">
+                    <div>
+                        <p>{{ game.deweloper }}</p>
+                    </div>
                 </td>
 
-                <td class="details-td">
-                    <p>Genres:</p>
+                <td class="details-td-left">
+                    <div>
+                        <p>Genres:</p>
+                    </div>
                 </td>
 
-                <td class="details-td">
-                    <p>{{ game.gatunki }}</p>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="details-td">
-                    <p>Age rating:</p>
-                </td>
-
-                <td>
-                    <img src="{% static game.ograniczenie_wiekowe %}"
-                         alt="Age Rating"
-                         class="age-rating-img">
-                </td>
-
-                <td>
-                    <p>Franchise:</p>
-                </td>
-
-                <td>
-                    <p>{{ game.franczyza }}</p>
-                </td>
-
-                <td>
-                    <p>Platformy:</p>
-                </td>
-
-                <td>
-                    <p>{{ game.platformy }}</p>
+                <td class="details-td-right">
+                    <div>
+                        <p>{{ game.gatunki }}</p>
+                    </div>
                 </td>
             </tr>
 
             <tr>
-                <td>
-                    <p>Rating:</p>
+                <td class="details-td-left">
+                    <div>
+                        <p>Age rating:</p>
+                    </div>
                 </td>
 
-                <td>
-                    <p>5.0</p>
+                <td class="details-td-right">
+                    <div>
+                        <img src="{% static game.ograniczenie_wiekowe %}"
+                             alt="Age Rating"
+                             class="age-rating-img">
+                    </div>
+                </td>
+
+                <td class="details-td-left">
+                    <div>
+                        <p>Franchise:</p>
+                    </div>
+                </td>
+
+                <td class="details-td-right">
+                    <div>
+                        <p>{{ game.franczyza }}</p>
+                    </div>
+                </td>
+
+                <td class="details-td-left">
+                    <div>
+                        <p>Platformy:</p>
+                    </div>
+                </td>
+
+                <td class="details-td-right">
+                    <div>
+                        <p>{{ game.platformy }}</p>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="details-td-left">
+                    <div>
+                        <p>Rating:</p>
+                    </div>
+                </td>
+
+                <td class="details-td-right">
+                    <div>
+                        <p>5.0</p>
+                    </div>
                 </td>
 
                 {% if game.dodatek %}
-                    <td colspan="2">
-                        <p>Base game:</p>
+                    <td colspan="2" class="details-td-left">
+                        <div>
+                            <p>Base game:</p>
+                        </div>
                     </td>
 
-                    <td colspan="2">
-                        <a href="{% url 'game' game.gra_podstawowa %}">
-                            {{ game.tytul_gry_podstawowej }}
-                        </a>
+                    <td colspan="2" class="details-td-right">
+                        <divx>
+                            <a href="{% url 'game' game.gra_podstawowa %}">
+                                {{ game.tytul_gry_podstawowej }}
+                            </a>
+                        </divx>
                     </td>
                 {% endif %}
             </tr>
