@@ -7,9 +7,13 @@ body {
 }
 
 table {
-    margin: 5%;
+    margin: 0 5%;
     border-collapse: separate;
     border-spacing: 3px;
+}
+
+table, th, td {
+    border: 2px solid black;
 }
 
 .age-rating-img {
@@ -44,8 +48,15 @@ table {
     margin: 2% 10%;
 }
 
+.game-img {
+    width: 30%;
+    text-align: center;
+    padding: 15px;
+}
+
 .games-list {
     text-align: center;
+    margin: 10px 2% 10px 2%;
 }
 
 .games-list-img {
@@ -70,19 +81,13 @@ table {
 
 .game-description > p {
     padding: 3%;
-    text-align: justify; 
+    text-align: justify;
 }
 
 .hidden {
     display: none;
 }
 
-.navbar,
-.games-list {
+.navbar {
     margin: 0 3% 0 3%;
-}
-
-.table-img {
-    width: 30%;
-    text-align: center;
 }

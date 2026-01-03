@@ -17,20 +17,20 @@
             {% csrf_token %}
 
             <div class="mb-3">
-                <label for="inputTitle" class="form-label">Game title</label>
+                <label for="inputTitle" class="form-label">Tytuł</label>
                 <input type="text" class="form-control" id="inputTitle" name="title" required>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="releaseDate" class="form-label">Release date</label>
+                        <label for="releaseDate" class="form-label">Data wydania</label>
                         <input type="date" class="form-control" id="releaseDate" name="releaseDate" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="ageRating" class="form-label">Age rating</label>
+                        <label for="ageRating" class="form-label">Ograniczenie wiekowe</label>
                         <select class="form-control" id="ageRating" name="ageRating">
                             <option value="3">3</option>
                             <option value="7">7</option>
@@ -45,7 +45,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="genres" class="form-label">Platforms</label>
+                        <label for="genres" class="form-label">Platformy</label>
                         <select class="form-control" id="platforms" name="platforms" size="8" multiple>
                             {% for platform in platforms %}
                                 <option value="{{ platform.nazwa }}">{{ platform.nazwa }}</option>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="genres" class="form-label">Genres</label>
+                        <label for="genres" class="form-label">Gatunki</label>
                         <select class="form-control" id="genres" name="genres" size="8" multiple>
                             {% for genre in genres %}
                                 <option value="{{ genre.nazwa }}">{{ genre.nazwa }}</option>
@@ -68,13 +68,13 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="boxart" class="form-label">Boxart</label>
+                        <label for="boxart" class="form-label">Okładka</label>
                         <input type="text" class="form-control" id="boxart" name="boxart">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="developer" class="form-label">Developer</label>
+                        <label for="developer" class="form-label">Deweloper</label>
                         <select class="form-control" id="developer" name="developer">
                             <option value="Brak">Brak</option>
                             {% for developer in developers %}
@@ -88,7 +88,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="franchise" class="form-label">Franchise</label>
+                <label for="franchise" class="form-label">Seria</label>
                 <select class="form-control" id="franchise" name="franchise">
                     <option value="Brak">Brak</option>
                     {% for franchise in franchises %}
@@ -100,7 +100,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
+                <label for="description" class="form-label">Opis</label>
                 <input type="text" class="form-control" id="description" name="description">
             </div>
 
@@ -110,7 +110,7 @@
             </div>
 
             <div class="mb-3 hidden" id="dlcBaseGameContainer">
-                <label for="dlcBaseGame" class="form-label">Base Game</label>
+                <label for="dlcBaseGame" class="form-label">Gra podstawowa</label>
                 <select class="form-control" id="dlcBaseGame" name="dlcBaseGame">
                     <option value="Brak">Brak</option>
                     {% for baseGame in baseGames %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {% load static %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid game-form">
+        {% if type == 'gatunek' %}
+            <h4>Usuń gatunek</h4>
+        {% elif type == 'platforma' %}
+            <h4>Usuń platformę</h4>
+        {% elif type == 'franczyza' %}
+            <h4>Usuń franczyzę</h4>
+        {% elif type == 'deweloper' %}
+            <h4>Usuń dewelopera</h4>
+        {% elif type == 'gra' %}
+            <h4>Usuń grę</h4>
+        {% endif %}
+
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-4 mt-4">
+                <select class="form-control" id="attribute" name="attribute">
+                    {% for attribute in attributes %}
+                        <option value="{{ attribute }}">{{ attribute }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Usuń</button>
+        </form>
+    </div>
+
+</body>
+</html>

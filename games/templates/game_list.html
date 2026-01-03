@@ -22,11 +22,17 @@
                       Panel administratora
                   </a>
                   <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="{% url 'game_form' %}">Dodaj grę</a></li>
-                      <li><a class="dropdown-item" href="#">Dodaj gatunek</a></li>
-                      <li><a class="dropdown-item" href="#">Dodaj platformę</a></li>
-                      <li><a class="dropdown-item" href="#">Dodaj franczyzę</a></li>
-                      <li><a class="dropdown-item" href="#">Dodaj dewelopera</a></li>
+                      <li><a class="dropdown-item" href="{% url 'add_game' %}">Dodaj grę</a></li>
+                      <li><a class="dropdown-item" href="{% url 'add' 'gatunek' %}">Dodaj gatunek</a></li>
+                      <li><a class="dropdown-item" href="{% url 'add' 'platforma' %}">Dodaj platformę</a></li>
+                      <li><a class="dropdown-item" href="{% url 'add' 'franczyza' %}">Dodaj franczyzę</a></li>
+                      <li><a class="dropdown-item" href="{% url 'add' 'deweloper' %}">Dodaj dewelopera</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="{% url 'delete' 'gra' %}">Usuń grę</a></li>
+                      <li><a class="dropdown-item" href="{% url 'delete' 'gatunek' %}">Usuń gatunek</a></li>
+                      <li><a class="dropdown-item" href="{% url 'delete' 'platforma' %}">Usuń platformę</a></li>
+                      <li><a class="dropdown-item" href="{% url 'delete' 'franczyza' %}">Usuń franczyzę</a></li>
+                      <li><a class="dropdown-item" href="{% url 'delete' 'deweloper' %}">Usuń dewelopera</a></li>
                   </ul>
             </div>
         </div>
