@@ -43,6 +43,10 @@ table, th, td {
     margin: 10px;
 }
 
+.game-details {
+    margin: 2% auto;
+}
+
 .game-form {
     max-width: 80%;
     margin: 2% 10%;

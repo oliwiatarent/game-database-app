@@ -17,8 +17,9 @@
     <div class="navbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'games' %}">Game App</a>
-        </div>
 
+            <a class="nav-link" href="{% url 'game_form' 'edit' %}?id={{ game.id }}">Edytuj</a>
+        </div>
     </div>
 
     <div class="game-details">
@@ -140,7 +141,7 @@
 
                     <td colspan="2" class="details-td-right">
                         <divx>
-                            <a href="{% url 'game' game.gra_podstawowa %}">
+                            <a href="{% url 'game' %}?id={{ game.gra_podstawowa }}">
                                 {{ game.tytul_gry_podstawowej }}
                             </a>
                         </divx>

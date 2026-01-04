@@ -28,7 +28,9 @@ def game_list(request):
     })
 
 
-def game(request, id):
+def game(request):
+
+    id = request.GET.get("id")
 
     game = {}
     columns = []
@@ -128,8 +130,9 @@ def game(request, id):
     })
 
 
-def add_game(request):
+def game_form(request, action):
     if request.method == 'POST':
+        id = request.GET.get('id')
         title = request.POST.get('title')
         releaseDate = request.POST.get('releaseDate')
         ageRating = request.POST.get('ageRating')
@@ -155,20 +158,21 @@ def add_game(request):
                     dlc = 0
                     dlcBaseGame = None
 
-                query = '''INSERT INTO Gry VALUES (
-                    null,
-                    :1,
-                    TO_DATE(:2, 'YYYY-MM-DD'),
-                    :3,
-                    :4,
-                    :5,
-                    (SELECT id FROM Deweloperzy WHERE nazwa = :6),
-                    :7,
-                    :8,
-                    :9)
-                '''
+                if action == 'add':
+                    query = '''
+                        INSERT INTO Gry VALUES (null, :1, TO_DATE(:2, 'YYYY-MM-DD'), :3, :4, :5,
+                        (SELECT id FROM Deweloperzy WHERE nazwa = :6), :7, :8, :9)
+                    '''
+                    cursor.execute(query, (title, releaseDate, int(ageRating), boxart, description, developer, franchise, dlc, dlcBaseGame))
+                else:
+                    query = '''
+                        UPDATE Gry SET tytul = :1, data_wydania = TO_DATE(:2, 'YYYY-MM-DD'), ograniczenie_wiekowe = :3,
+                        okladka = :4, opis = :5, deweloper = (SELECT id FROM Deweloperzy WHERE nazwa = :6), franczyza = :7,
+                        dodatek = :8, gra_podstawowa = :9
+                        WHERE id = :10
+                    '''
+                    cursor.execute(query, (title, releaseDate, int(ageRating), boxart, description, developer, franchise, dlc, dlcBaseGame, id))
 
-                cursor.execute(query, (title, releaseDate, int(ageRating), boxart, description, developer, franchise, dlc, dlcBaseGame))
 
                 connection.commit()
 
@@ -195,6 +199,8 @@ def add_game(request):
         return redirect('games')
 
 
+    values = ["title", "releaseDate", "ageRating", "boxart", "developer", "franchise", "description", "dlc", "dlcBaseGame"]
+    default_values = {}
     developers = []
     franchises = []
     baseGames = []
@@ -238,13 +244,41 @@ def add_game(request):
                     "nazwa": item[0]
                 })
 
+            if action == "edit":
+                id = request.GET.get("id")
+                sql = """SELECT tytul, data_wydania, ograniczenie_wiekowe, okladka, deweloper, 
+                    franczyza, opis, dodatek, gra_podstawowa FROM Gry WHERE id = :1"""
+                cursor.execute(sql, (id, ))
 
-    return render(request, "add_game_form.html", {
+                result = cursor.fetchone()
+                for i in range(len(values)):
+                    if result[i] is not None:
+                        if values[i] == "releaseDate":
+                            default_values[values[i]] = result[i].strftime("%Y-%m-%d")
+                        else:
+                            default_values[values[i]] = result[i]
+
+                sql = "SELECT nazwa FROM Deweloperzy WHERE id = :1"
+                cursor.execute(sql, (int(default_values["developer"]), ))
+                default_values["developer"] = cursor.fetchone()[0]
+
+                sql = "SELECT tytul FROM Gry WHERE id = :1"
+                cursor.execute(sql, (int(default_values["dlcBaseGame"]), ))
+                default_values["dlcBaseGame"] = cursor.fetchone()[0]
+
+    if action == 'edit':
+        edit = 1
+    else:
+        edit = 0
+
+    return render(request, "game_form.html", {
         "developers": developers,
         "franchises": franchises,
         "baseGames": baseGames,
         "platforms": platforms,
-        "genres": genres
+        "genres": genres,
+        "default_values": default_values,
+        "edit": edit
     })
 
 

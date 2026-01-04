@@ -22,7 +22,7 @@
                       Panel administratora
                   </a>
                   <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="{% url 'add_game' %}">Dodaj grę</a></li>
+                      <li><a class="dropdown-item" href="{% url 'game_form' 'add' %}">Dodaj grę</a></li>
                       <li><a class="dropdown-item" href="{% url 'add' 'gatunek' %}">Dodaj gatunek</a></li>
                       <li><a class="dropdown-item" href="{% url 'add' 'platforma' %}">Dodaj platformę</a></li>
                       <li><a class="dropdown-item" href="{% url 'add' 'franczyza' %}">Dodaj franczyzę</a></li>
@@ -46,7 +46,7 @@
 
     <div class="games-list">
         {% for game in games %}
-            <a href="{% url 'game' game.id %}">
+            <a href="{% url 'game' %}?id={{ game.id }}">
                 <img src="{% static game.boxart %}"
                      alt="{{ game.title }}"
                      class="games-list-img">

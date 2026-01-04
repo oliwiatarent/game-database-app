@@ -18,25 +18,25 @@
 
             <div class="mb-3">
                 <label for="inputTitle" class="form-label">Tytuł</label>
-                <input type="text" class="form-control" id="inputTitle" name="title" required>
+                <input type="text" class="form-control" id="inputTitle" name="title" value="{{ default_values.title }}" required>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="releaseDate" class="form-label">Data wydania</label>
-                        <input type="date" class="form-control" id="releaseDate" name="releaseDate" required>
+                        <input type="date" class="form-control" id="releaseDate" name="releaseDate" value="{{ default_values.releaseDate }}" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="ageRating" class="form-label">Ograniczenie wiekowe</label>
                         <select class="form-control" id="ageRating" name="ageRating">
-                            <option value="3">3</option>
-                            <option value="7">7</option>
-                            <option value="12">12</option>
-                            <option value="16">16</option>
-                            <option value="18">18</option>
+                            <option value="3" {% if default_values.ageRating == 3 %}selected{% endif %}>3</option>
+                            <option value="7" {% if default_values.ageRating == 7 %}selected{% endif %}>7</option>
+                            <option value="12" {% if default_values.ageRating == 12 %}selected{% endif %}>12</option>
+                            <option value="16" {% if default_values.ageRating == 16 %}selected{% endif %}>16</option>
+                            <option value="18" {% if default_values.ageRating == 18 %}selected{% endif %}>18</option>
                         </select>
                     </div>
                 </div>
@@ -69,17 +69,17 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="boxart" class="form-label">Okładka</label>
-                        <input type="text" class="form-control" id="boxart" name="boxart">
+                        <input type="text" class="form-control" id="boxart" name="boxart" value="{{ default_values.boxart }}">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="developer" class="form-label">Deweloper</label>
                         <select class="form-control" id="developer" name="developer">
-                            <option value="Brak">Brak</option>
+                            <option value="Brak" {% if default_values.developer == "Brak" %} selected {% endif %}>Brak</option>
                             {% for developer in developers %}
                                 {% if developer.nazwa != 'Brak' %}
-                                    <option value="{{ developer.nazwa }}">{{ developer.nazwa }}</option>
+                                    <option value="{{ developer.nazwa }}" {% if developer.nazwa == default_values.developer %} selected {% endif %}>{{ developer.nazwa }}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
@@ -90,10 +90,10 @@
             <div class="mb-3">
                 <label for="franchise" class="form-label">Seria</label>
                 <select class="form-control" id="franchise" name="franchise">
-                    <option value="Brak">Brak</option>
+                    <option value="Brak" {% if default_values.franchise == "Brak" %} selected {% endif %}>Brak</option>
                     {% for franchise in franchises %}
                         {% if franchise.nazwa != 'Brak' %}
-                            <option value="{{ franchise.nazwa }}">{{ franchise.nazwa }}</option>
+                            <option value="{{ franchise.nazwa }}" {% if default_values.franchise == franchise.nazwa %} selected {% endif %}>{{ franchise.nazwa }}</option>
                         {% endif %}
                     {% endfor %}
                 </select>
@@ -101,11 +101,11 @@
 
             <div class="mb-3">
                 <label for="description" class="form-label">Opis</label>
-                <input type="text" class="form-control" id="description" name="description">
+                <input type="text" class="form-control" id="description" name="description" value="{{ default_values.description }}">
             </div>
 
             <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="dlc" name="dlc">
+                <input type="checkbox" class="form-check-input" id="dlc" name="dlc" {% if default_values.dlc == 1 %} checked {% endif %}>
                 <label class="form-check-label" for="dlc">DLC</label>
             </div>
 
@@ -114,18 +114,26 @@
                 <select class="form-control" id="dlcBaseGame" name="dlcBaseGame">
                     <option value="Brak">Brak</option>
                     {% for baseGame in baseGames %}
-                        <option value="{{ baseGame.tytul }}">{{ baseGame.tytul }}</option>
+                        <option value="{{ baseGame.tytul }}" {% if default_values.dlcBaseGame == baseGame.tytul %} selected {% endif %}>{{ baseGame.tytul }}</option>
                     {% endfor %}
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary">Dodaj grę</button>
+            {% if edit == 0 %}
+                <button type="submit" class="btn btn-primary">Dodaj grę</button>
+            {% else %}
+                <button type="submit" class="btn btn-primary">Edytuj grę</button>
+            {% endif %}
         </form>
     </div>
 
     <script>
         var checkbox = document.getElementById('dlc');
         var baseGame = document.getElementById('dlcBaseGameContainer');
+
+        if (checkbox.checked) {
+            baseGame.classList.remove('hidden');
+        }
 
         checkbox.addEventListener('change', () => {
                 if (checkbox.checked) {
