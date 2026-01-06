@@ -58,8 +58,6 @@ def game(request):
                     attribute = 'img/age_ratings/' + str(game_row[i]) + '.png'
                 elif columns[i] == "data_wydania":
                     attribute = game_row[i].date
-                elif columns[i] == "franczyza" and game_row[i] is None:
-                    attribute = 'Brak'
                 else:
                     attribute = game_row[i]
 
@@ -67,17 +65,14 @@ def game(request):
 
 
             # Przetwarzanie dewelopera
-            if (game["deweloper"] is None):
-                game["deweloper"] = 'Brak'
-            else:
-                sql = f"""
-                    SELECT nazwa 
-                    FROM {username}.gry g INNER JOIN deweloperzy d ON d.id = g.deweloper
-                    WHERE g.id = :1
-                """
-                cursor.execute(sql, (id,))
+            sql = f"""
+                SELECT nazwa 
+                FROM {username}.gry g INNER JOIN deweloperzy d ON d.id = g.deweloper
+                WHERE g.id = :1
+            """
+            cursor.execute(sql, (id,))
 
-                game["deweloper"] = cursor.fetchone()[0]
+            game["deweloper"] = cursor.fetchone()[0]
 
             # Przetwarzanie gatunków
             sql = f"""
@@ -145,8 +140,6 @@ def game_form(request, action):
         genres = request.POST.getlist('genres')
         platforms = request.POST.getlist('platforms')
 
-        print(platforms)
-
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
             with connection.cursor() as cursor:
                 if dlc == 'on':
@@ -172,6 +165,18 @@ def game_form(request, action):
                         WHERE id = :10
                     '''
                     cursor.execute(query, (title, releaseDate, int(ageRating), boxart, description, developer, franchise, dlc, dlcBaseGame, id))
+
+                    query = '''
+                        DELETE FROM Gry_Platformy
+                        WHERE ID_Gry = :1
+                    '''
+                    cursor.execute(query, (id, ))
+
+                    query = '''
+                        DELETE FROM Gry_Gatunki
+                        WHERE ID_Gry = :1
+                    '''
+                    cursor.execute(query, (id, ))
 
 
                 connection.commit()
@@ -205,6 +210,8 @@ def game_form(request, action):
     franchises = []
     baseGames = []
     platforms = []
+    default_platforms = []
+    default_genres = []
     genres = []
 
     with oracledb.connect(user=username, password=password, dsn=cs) as connection:
@@ -246,9 +253,9 @@ def game_form(request, action):
 
             if action == "edit":
                 id = request.GET.get("id")
-                sql = """SELECT tytul, data_wydania, ograniczenie_wiekowe, okladka, deweloper, 
+                query = """SELECT tytul, data_wydania, ograniczenie_wiekowe, okladka, deweloper, 
                     franczyza, opis, dodatek, gra_podstawowa FROM Gry WHERE id = :1"""
-                cursor.execute(sql, (id, ))
+                cursor.execute(query, (id, ))
 
                 result = cursor.fetchone()
                 for i in range(len(values)):
@@ -258,13 +265,40 @@ def game_form(request, action):
                         else:
                             default_values[values[i]] = result[i]
 
-                sql = "SELECT nazwa FROM Deweloperzy WHERE id = :1"
-                cursor.execute(sql, (int(default_values["developer"]), ))
+                query = "SELECT nazwa FROM Deweloperzy WHERE id = :1"
+                cursor.execute(query, (int(default_values["developer"]), ))
                 default_values["developer"] = cursor.fetchone()[0]
 
-                sql = "SELECT tytul FROM Gry WHERE id = :1"
-                cursor.execute(sql, (int(default_values["dlcBaseGame"]), ))
-                default_values["dlcBaseGame"] = cursor.fetchone()[0]
+                if "dlcBaseGame" in default_values and default_values["dlcBaseGame"] is not None:
+                    query = "SELECT tytul FROM Gry WHERE id = :1"
+                    cursor.execute(query, (int(default_values["dlcBaseGame"]),))
+                    default_values["dlcBaseGame"] = cursor.fetchone()[0]
+
+                query = '''
+                    SELECT nazwa_platformy FROM Gry_Platformy
+                    WHERE ID_Gry = :1
+                '''
+                cursor.execute(query, (id, ))
+
+                for item in cursor:
+                    default_platforms.append(item[0])
+
+                if len(default_platforms) > 0:
+                    default_values["platforms"] = default_platforms
+
+                query = '''
+                    SELECT nazwa_gatunku FROM Gry_Gatunki
+                    WHERE ID_Gry = :1
+                '''
+                cursor.execute(query, (id,))
+
+                for item in cursor:
+                    default_genres.append(item[0])
+
+                if len(default_genres) > 0:
+                    default_values["genres"] = default_genres
+
+
 
     if action == 'edit':
         edit = 1

@@ -45,10 +45,14 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="genres" class="form-label">Platformy</label>
+                        <label for="platforms" class="form-label">Platformy</label>
                         <select class="form-control" id="platforms" name="platforms" size="8" multiple>
                             {% for platform in platforms %}
-                                <option value="{{ platform.nazwa }}">{{ platform.nazwa }}</option>
+                                <option value="{{ platform.nazwa }}"
+                                    {% if default_values.platforms and platform.nazwa in default_values.platforms %}
+                                        selected
+                                    {% endif %}
+                                >{{ platform.nazwa }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -58,7 +62,11 @@
                         <label for="genres" class="form-label">Gatunki</label>
                         <select class="form-control" id="genres" name="genres" size="8" multiple>
                             {% for genre in genres %}
-                                <option value="{{ genre.nazwa }}">{{ genre.nazwa }}</option>
+                                <option value="{{ genre.nazwa }}"
+                                    {% if default_values.genres and genre.nazwa in default_values.genres %}
+                                        selected
+                                    {% endif %}
+                                >{{ genre.nazwa }}</option>
                             {% endfor %}
                         </select>
                     </div>
