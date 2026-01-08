@@ -27,7 +27,7 @@
 
         <br>
 
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="mb-3">
@@ -91,7 +91,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="boxart" class="form-label">Okładka</label>
-                        <input type="text" class="form-control" id="boxart" name="boxart" value="{{ default_values.boxart }}">
+                        <input type="file" class="form-control" id="boxart" name="boxart">
                     </div>
                 </div>
                 <div class="col-md-6">

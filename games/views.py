@@ -1,11 +1,37 @@
+import shutil
+
 from django.shortcuts import render, redirect
 from dotenv import dotenv_values
 import oracledb
+import os
+
+from game_database_app import settings
 
 config = dotenv_values(".env")
 username = config["USERNAME"]
 password = config["PASSWD"]
 cs = config["CS"]
+
+
+def process_file(boxart):
+    upload_folder = os.path.join(settings.MEDIA_ROOT, 'boxart')
+    static_folder = os.path.join(settings.BASE_DIR, 'static', 'img', 'boxart')
+    os.makedirs(upload_folder, exist_ok=True)
+    os.makedirs(static_folder, exist_ok=True)
+    filename = boxart.name
+    file_path = os.path.join(upload_folder, filename)
+    destination = os.path.join(static_folder, filename)
+
+    with open(file_path, 'wb+') as f:
+        for chunk in boxart.chunks():
+            f.write(chunk)
+
+    shutil.copy(file_path, destination)
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    return 'img/boxart/' + filename
 
 
 def game_list(request):
@@ -142,7 +168,7 @@ def game_form(request, action):
         title = request.POST.get('title')
         releaseDate = request.POST.get('releaseDate')
         ageRating = request.POST.get('ageRating')
-        boxart = request.POST.get('boxart')
+        boxart = request.FILES.get('boxart')
         description = request.POST.get('description')
         developer = request.POST.get('developer')
         franchise = request.POST.get('franchise')
@@ -163,20 +189,35 @@ def game_form(request, action):
                         dlc = 0
                         dlcBaseGame = None
 
+                    if boxart:
+                        boxart_path = process_file(boxart)
+
                     if action == 'add':
+                        if boxart is None:
+                            boxart_path = 'img/boxart/default.png'
+
                         query = '''
                             INSERT INTO Gry VALUES (null, :1, TO_DATE(:2, 'YYYY-MM-DD'), :3, :4, :5,
                             (SELECT id FROM Deweloperzy WHERE nazwa = :6), :7, :8, :9)
                         '''
-                        cursor.execute(query, (title, releaseDate, int(ageRating), boxart, description, developer, franchise, dlc, dlcBaseGame))
+                        cursor.execute(query, (title, releaseDate, int(ageRating), boxart_path, description, developer, franchise, dlc, dlcBaseGame))
                     else:
-                        query = '''
-                            UPDATE Gry SET tytul = :1, data_wydania = TO_DATE(:2, 'YYYY-MM-DD'), ograniczenie_wiekowe = :3,
-                            okladka = :4, opis = :5, deweloper = (SELECT id FROM Deweloperzy WHERE nazwa = :6), franczyza = :7,
-                            dodatek = :8, gra_podstawowa = :9
-                            WHERE id = :10
-                        '''
-                        cursor.execute(query, (title, releaseDate, int(ageRating), boxart, description, developer, franchise, dlc, dlcBaseGame, id))
+                        if boxart is None:
+                            query = '''
+                                UPDATE Gry SET tytul = :1, data_wydania = TO_DATE(:2, 'YYYY-MM-DD'), ograniczenie_wiekowe = :3,
+                                opis = :4, deweloper = (SELECT id FROM Deweloperzy WHERE nazwa = :5), franczyza = :6,
+                                dodatek = :7, gra_podstawowa = :8
+                                WHERE id = :9
+                            '''
+                            cursor.execute(query, (title, releaseDate, int(ageRating), description, developer, franchise, dlc, dlcBaseGame, id))
+                        else:
+                            query = '''
+                                UPDATE Gry SET tytul = :1, data_wydania = TO_DATE(:2, 'YYYY-MM-DD'), ograniczenie_wiekowe = :3,
+                                okladka = :4, opis = :5, deweloper = (SELECT id FROM Deweloperzy WHERE nazwa = :6), franczyza = :7,
+                                dodatek = :8, gra_podstawowa = :9
+                                WHERE id = :10
+                            '''
+                            cursor.execute(query, (title, releaseDate, int(ageRating), boxart_path, description, developer, franchise, dlc, dlcBaseGame, id))
 
                         query = '''
                             DELETE FROM Gry_Platformy
