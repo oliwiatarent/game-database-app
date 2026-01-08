@@ -272,35 +272,35 @@ def game_form(request, action):
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT nazwa FROM deweloperzy")
+                cursor.execute("SELECT nazwa FROM deweloperzy ORDER BY nazwa")
 
                 for item in cursor:
                     developers.append({
                         "nazwa": item[0]
                     })
 
-                cursor.execute("SELECT nazwa FROM franczyzy")
+                cursor.execute("SELECT nazwa FROM franczyzy ORDER BY nazwa")
 
                 for item in cursor:
                     franchises.append({
                         "nazwa": item[0]
                     })
 
-                cursor.execute("SELECT tytul FROM gry WHERE dodatek = 0")
+                cursor.execute("SELECT tytul FROM gry WHERE dodatek = 0 ORDER BY tytul")
 
                 for item in cursor:
                     baseGames.append({
                         "tytul": item[0]
                     })
 
-                cursor.execute("SELECT nazwa FROM platformy")
+                cursor.execute("SELECT nazwa FROM platformy ORDER BY nazwa")
 
                 for item in cursor:
                     platforms.append({
                         "nazwa": item[0]
                     })
 
-                cursor.execute("SELECT nazwa FROM gatunki")
+                cursor.execute("SELECT nazwa FROM gatunki ORDER BY nazwa")
 
                 for item in cursor:
                     genres.append({
