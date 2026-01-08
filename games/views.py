@@ -98,7 +98,7 @@ def game(request):
     
                 # Przetwarzanie platform
                 sql = f"""
-                    SELECT nazwa_platformy 
+                    SELECT nazwa_platformy
                     FROM Gry_Platformy
                     WHERE ID_Gry = :1
                 """
@@ -108,9 +108,9 @@ def game(request):
                     platform_list.append(item[0])
     
                 if len(platform_list) == 0:
-                    game["Platformy"] = "Brak"
+                    game["platformy"] = "Brak"
                 else:
-                    game["Platformy"] = ', '.join(platform_list)
+                    game["platformy"] = ', '.join(platform_list)
     
     
                 # Przetwarzanie gry podstawowej dla dodatków
@@ -123,6 +123,7 @@ def game(request):
                     cursor.execute(sql, (game["gra_podstawowa"], ))
     
                     game["tytul_gry_podstawowej"] = cursor.fetchone()[0]
+
     except TypeError as ex:
         return render(request, 'error.html', {
             "information": "Gra o podanym id nie istnieje w bazie danych"
@@ -378,8 +379,6 @@ def delete(request, type):
                         sql = "DELETE FROM Franczyzy WHERE nazwa = :1"
                     if type == 'deweloper':
                         sql = "DELETE FROM Deweloperzy WHERE nazwa = :1"
-                    if type == 'gra':
-                        sql = "DELETE FROM Gry WHERE tytul = :1"
 
                     cursor.execute(sql, (attribute, ))
                     connection.commit()
@@ -417,3 +416,23 @@ def delete(request, type):
         "type": type,
         "attributes": attributes
     })
+
+
+def delete_game(request, id):
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                sql = """
+                    DELETE FROM Gry
+                    WHERE id = :1
+                """
+
+                cursor.execute(sql, (id, ))
+
+                connection.commit()
+    except:
+        return render(request, 'error.html')
+
+    return redirect("games")
+

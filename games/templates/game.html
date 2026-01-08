@@ -14,13 +14,18 @@
 
 <body>
 
-    <div class="navbar">
+    <nav class="navbar navbar-expand navbar-light">
         <div class="container-fluid">
+
             <a class="navbar-brand" href="{% url 'games' %}">Game App</a>
 
-            <a class="nav-link" href="{% url 'game_form' 'edit' %}?id={{ game.id }}">Edytuj</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="{% url 'game_form' 'edit' %}?id={{ game.id }}">Edytuj</a>
+                <a class="nav-link" href="{% url 'delete_game' game.id %}">Usuń</a>
+            </div>
+
         </div>
-    </div>
+    </nav>
 
     <div class="game-details">
         <table>

@@ -12,7 +12,21 @@
 
 <body>
 
+    <div class="navbar">
+        <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'games' %}">Game App</a>
+        </div>
+    </div>
+
     <div class="container-fluid game-form">
+        {% if edit %}
+                <h3>Edytuj grę</h3>
+        {% else %}
+            <h3>Dodaj grę</h3>
+        {% endif %}
+
+        <br>
+
         <form method="post">
             {% csrf_token %}
 
