@@ -43,6 +43,19 @@ table, th, td {
     margin: 10px;
 }
 
+.error {
+    margin: 3%;
+    background-color: #ffabab;
+    border: 2px solid red;
+    font-size: 1rem;
+    text-align: center;
+    padding: 10px;
+}
+
+.error-button {
+    text-align: center;
+}
+
 .game-details {
     margin: 2% auto;
 }
