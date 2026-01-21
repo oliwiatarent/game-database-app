@@ -12,5 +12,6 @@ urlpatterns = [
     path("delete_game/<int:id>", views.delete_game, name="delete_game"),
     path('login/', views.login_user, name='login'),
     path('register/', views.register_user, name='register'),
-    path('logout/', views.logout_user, name='logout')
+    path('logout/', views.logout_user, name='logout'),
+    path('profile/', views.profile, name='profile')
 ]

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Profil użytkownika</title>
+</head>
+<body>
+   <div class="navbar"><div class="container-fluid"><a class="navbar-brand" href="{% url 'games' %}">Game App</a></div></div>
+
+    <div class="container">
+        <div class="card shadow mx-auto" style="max-width: 600px;">
+            <div class="card-body text-center">
+
+                <img src="{% static user.avatar %}"
+                     alt="Avatar"
+                     class="rounded-circle mb-3"
+                     style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #dee2e6;">
+
+                <h2 class="card-title">{{ user.nazwa }}</h2>
+                <p class="text-muted">Dołączył: {{ user.data_zalozenia|date:"d M Y" }}</p>
+
+                <hr>
+
+                <div class="text-start mt-4">
+                    <h5>O mnie:</h5>
+                    <p class="card-text">
+                        {% if user.opis %}
+                            {{ user.opis }}
+                        {% else %}
+                            <span class="text-muted fst-italic">Brak opisu.</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

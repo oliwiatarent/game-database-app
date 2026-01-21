@@ -523,26 +523,26 @@ def login_user(request):
         try:
             with oracledb.connect(user=username, password=password, dsn=cs) as connection:
                 with connection.cursor() as cursor:
-                    query = "SELECT ID, haslo, administrator FROM Uzytkownicy WHERE nazwa = :1"
+                    query = "SELECT ID, haslo, administrator, zdjecie_profilowe FROM Uzytkownicy WHERE nazwa = :1"
                     cursor.execute(query, (nazwa,))
                     user_row = cursor.fetchone()
 
                     if user_row:
-                        db_id, db_password, db_is_admin = user_row
+                        db_id, db_password, db_is_admin, db_avatar = user_row
 
                         if check_password(haslo, db_password):
-                            #sesja
                             request.session['user_id'] = db_id
                             request.session['user_name'] = nazwa
                             request.session['is_admin'] = db_is_admin
+                            request.session['user_avatar'] = db_avatar
 
                             return redirect('games')
                         else:
                             return render(request, 'login.html', {'error': 'Nieprawidłowe hasło!'})
                     else:
                         return render(request, 'login.html', {'error': 'Nie ma takiego użytkownika!'})
-        except Exception:
-            return render(request, 'login.html', {'error': 'Błąd połączenia z bazą danych!'})
+        except Exception as e:
+            return render(request, 'login.html', {'error': f'Błąd: {e}'})
 
     return render(request, 'login.html')
 
@@ -550,3 +550,35 @@ def login_user(request):
 def logout_user(request):
     request.session.flush()
     return redirect('games')
+
+
+def profile(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    user_data = {}
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                query = """
+                    SELECT nazwa, email, zdjecie_profilowe, opis, data_zalozenia 
+                    FROM Uzytkownicy 
+                    WHERE ID = :1
+                """
+                cursor.execute(query, (user_id,))
+                result = cursor.fetchone()
+
+                if result:
+                    user_data = {
+                        "nazwa": result[0],
+                        "email": result[1],
+                        "avatar": result[2],
+                        "opis": result[3],
+                        "data_zalozenia": result[4]
+                    }
+    except Exception:
+        return render(request, 'error.html')
+
+    return render(request, 'profile.html', {'user': user_data})

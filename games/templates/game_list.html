@@ -20,7 +20,13 @@
             <div class="d-flex align-items-center">
 
                 {% if request.session.user_id %}
-                    <span class="me-3">Witaj, <b>{{ request.session.user_name }}</b></span>
+                    <a href="{% url 'profile' %}" class="me-3 text-decoration-none text-dark me-3" title="Twój profil">
+                        <span class="me-2 fw-bold">{{ request.session.user_name }}</span>
+                        <img src="{% static request.session.user_avatar %}"
+                             alt="Profil"
+                             class="rounded-circle"
+                             style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #ccc;">
+                    </a>
 
                     {% if request.session.is_admin == 1 %}
                     <div class="nav-item dropdown me-3">
