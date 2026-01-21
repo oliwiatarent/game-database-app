@@ -558,16 +558,17 @@ def profile(request):
         return redirect('login')
 
     user_data = {}
+    user_games = []
 
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
             with connection.cursor() as cursor:
-                query = """
+                query_user = """
                     SELECT nazwa, email, zdjecie_profilowe, opis, data_zalozenia 
                     FROM Uzytkownicy 
                     WHERE ID = :1
                 """
-                cursor.execute(query, (user_id,))
+                cursor.execute(query_user, (user_id,))
                 result = cursor.fetchone()
 
                 if result:
@@ -578,10 +579,28 @@ def profile(request):
                         "opis": result[3],
                         "data_zalozenia": result[4]
                     }
-    except Exception:
+
+                query_games = """
+                    SELECT g.id, g.tytul, g.okladka
+                    FROM Gry g
+                    JOIN Wpisy w ON g.id = w.ID_Gry
+                    WHERE w.ID_Uzytkownika = :1
+                    ORDER BY g.tytul
+                """
+                cursor.execute(query_games, (user_id,))
+
+                for row in cursor:
+                    user_games.append({
+                        "id": row[0],
+                        "title": row[1],
+                        "boxart": row[2]
+                    })
+
+    except Exception as e:
+        print(f"{e}")
         return render(request, 'error.html')
 
-    return render(request, 'profile.html', {'user': user_data})
+    return render(request, 'profile.html', {'user': user_data, 'games': user_games})
 
 
 def search_game(request):
