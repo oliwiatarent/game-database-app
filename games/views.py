@@ -1,6 +1,7 @@
 import shutil
 
 from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password, check_password
 from dotenv import dotenv_values
 import oracledb
 import os
@@ -477,3 +478,75 @@ def delete_game(request, id):
 
     return redirect("games")
 
+
+def register_user(request):
+    if request.method == 'POST':
+        nazwa = request.POST.get('username')
+        email = request.POST.get('email')
+        haslo = request.POST.get('password')
+        powtorz_haslo = request.POST.get('confirm_password')
+
+        if haslo != powtorz_haslo:
+            return render(request, 'register.html', {
+                'error': 'Podane hasła nie są identyczne!'
+            })
+        haslo_hash = make_password(haslo)
+
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT count(*) FROM Uzytkownicy WHERE nazwa = :1 OR email = :2", (nazwa, email))
+                    if cursor.fetchone()[0] > 0:
+                        return render(request, 'register.html',
+                                      {'error': 'Użytkownik o takiej nazwie lub emailu już istnieje!'})
+
+                    query = """
+                        INSERT INTO Uzytkownicy (nazwa, email, haslo, administrator)
+                        VALUES (:1, :2, :3, 0)
+                    """
+                    cursor.execute(query, (nazwa, email, haslo_hash))
+                    connection.commit()
+
+            return redirect('login')
+
+        except Exception as e:
+            return render(request, 'register.html', {'error': f'Błąd rejestracji: {e}'})
+
+    return render(request, 'register.html')
+
+
+def login_user(request):
+    if request.method == 'POST':
+        nazwa = request.POST.get('username')
+        haslo = request.POST.get('password')
+
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    query = "SELECT ID, haslo, administrator FROM Uzytkownicy WHERE nazwa = :1"
+                    cursor.execute(query, (nazwa,))
+                    user_row = cursor.fetchone()
+
+                    if user_row:
+                        db_id, db_password, db_is_admin = user_row
+
+                        if check_password(haslo, db_password):
+                            #sesja
+                            request.session['user_id'] = db_id
+                            request.session['user_name'] = nazwa
+                            request.session['is_admin'] = db_is_admin
+
+                            return redirect('games')
+                        else:
+                            return render(request, 'login.html', {'error': 'Nieprawidłowe hasło!'})
+                    else:
+                        return render(request, 'login.html', {'error': 'Nie ma takiego użytkownika!'})
+        except Exception:
+            return render(request, 'login.html', {'error': 'Błąd połączenia z bazą danych!'})
+
+    return render(request, 'login.html')
+
+
+def logout_user(request):
+    request.session.flush()
+    return redirect('games')

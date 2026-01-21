@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
+    <title>Wszystkie Gry</title>
 </head>
 
 <body>
@@ -17,22 +17,37 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'games' %}">Game App</a>
 
-            <div class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Panel administratora
-                  </a>
-                  <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="{% url 'game_form' 'add' %}">Dodaj grę</a></li>
-                      <li><a class="dropdown-item" href="{% url 'add' 'gatunek' %}">Dodaj gatunek</a></li>
-                      <li><a class="dropdown-item" href="{% url 'add' 'platforma' %}">Dodaj platformę</a></li>
-                      <li><a class="dropdown-item" href="{% url 'add' 'franczyza' %}">Dodaj franczyzę</a></li>
-                      <li><a class="dropdown-item" href="{% url 'add' 'deweloper' %}">Dodaj dewelopera</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="{% url 'delete' 'gatunek' %}">Usuń gatunek</a></li>
-                      <li><a class="dropdown-item" href="{% url 'delete' 'platforma' %}">Usuń platformę</a></li>
-                      <li><a class="dropdown-item" href="{% url 'delete' 'franczyza' %}">Usuń franczyzę</a></li>
-                      <li><a class="dropdown-item" href="{% url 'delete' 'deweloper' %}">Usuń dewelopera</a></li>
-                  </ul>
+            <div class="d-flex align-items-center">
+
+                {% if request.session.user_id %}
+                    <span class="me-3">Witaj, <b>{{ request.session.user_name }}</b></span>
+
+                    {% if request.session.is_admin == 1 %}
+                    <div class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle btn btn-outline-secondary" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 5px 10px;">
+                            Panel administratora
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'game_form' 'add' %}">Dodaj grę</a></li>
+                            <li><a class="dropdown-item" href="{% url 'add' 'gatunek' %}">Dodaj gatunek</a></li>
+                            <li><a class="dropdown-item" href="{% url 'add' 'platforma' %}">Dodaj platformę</a></li>
+                            <li><a class="dropdown-item" href="{% url 'add' 'franczyza' %}">Dodaj franczyzę</a></li>
+                            <li><a class="dropdown-item" href="{% url 'add' 'deweloper' %}">Dodaj dewelopera</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'delete' 'gatunek' %}">Usuń gatunek</a></li>
+                            <li><a class="dropdown-item" href="{% url 'delete' 'platforma' %}">Usuń platformę</a></li>
+                            <li><a class="dropdown-item" href="{% url 'delete' 'franczyza' %}">Usuń franczyzę</a></li>
+                            <li><a class="dropdown-item" href="{% url 'delete' 'deweloper' %}">Usuń dewelopera</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Wyloguj</a>
+
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-sm me-2">Zaloguj się</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm">Zarejestruj</a>
+                {% endif %}
             </div>
         </div>
     </div>
