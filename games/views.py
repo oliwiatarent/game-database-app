@@ -582,3 +582,94 @@ def profile(request):
         return render(request, 'error.html')
 
     return render(request, 'profile.html', {'user': user_data})
+
+
+def search_game(request):
+    query = request.GET.get('q')
+    results = []
+
+    if query:
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    sql = """
+                        SELECT id, tytul, okladka, deweloper, data_wydania 
+                        FROM Gry 
+                        WHERE LOWER(tytul) LIKE LOWER(:1)
+                        ORDER BY tytul
+                    """
+                    cursor.execute(sql, (f"%{query}%",))
+
+                    for row in cursor:
+                        results.append({
+                            "id": row[0],
+                            "title": row[1],
+                            "boxart": row[2],
+                            "date": row[4]
+                        })
+        except Exception:
+            return render(request, 'error.html')
+
+    return render(request, 'search_game.html', {'results': results, 'query': query})
+
+
+def add_entry(request, game_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    if request.method == 'POST':
+        w_trakcie = 1 if request.POST.get('w_trakcie') == 'on' else 0
+        czy_ukonczona = 1 if request.POST.get('czy_ukonczona') == 'on' else 0
+        sto_procent = 1 if request.POST.get('sto_procent') == 'on' else 0
+        czy_ulubiona = 1 if request.POST.get('czy_ulubiona') == 'on' else 0
+        czas_r = request.POST.get('czas')
+        czas = 0.0
+        if czas_r:
+            try:
+                czas = float(czas)
+            except ValueError:
+                czas = 0.0
+
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    check_sql = "SELECT count(*) FROM Wpisy WHERE ID_Uzytkownika = :1 AND ID_Gry = :2"
+                    cursor.execute(check_sql, (user_id, game_id))
+
+                    # wpis już istnieje
+                    if cursor.fetchone()[0] > 0:
+                        sql = """
+                            UPDATE Wpisy SET 
+                            w_trakcie = :1, czy_ukonczona = :2, sto_procent = :3, czy_ulubiona = :4, czas = :5
+                            WHERE ID_Uzytkownika = :6 AND ID_Gry = :7
+                        """
+                        cursor.execute(sql, (w_trakcie, czy_ukonczona, sto_procent, czy_ulubiona, czas, user_id, game_id))
+                    else:
+                        sql = """
+                            INSERT INTO Wpisy (ID_Uzytkownika, ID_Gry, w_trakcie, czy_ukonczona, sto_procent, czy_ulubiona, czas)
+                            VALUES (:1, :2, :3, :4, :5, :6, :7)
+                        """
+                        cursor.execute(sql, (user_id, game_id, w_trakcie, czy_ukonczona, sto_procent, czy_ulubiona, czas))
+
+                    connection.commit()
+            return redirect('profile')
+
+        except Exception as e:
+            #print(f"{e}")
+            return render(request, 'error.html')
+
+    # do nagłówka
+    game_info = {}
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT tytul, okladka FROM Gry WHERE id = :1", (game_id,))
+                row = cursor.fetchone()
+                if row:
+                    game_info = {"title": row[0], "boxart": row[1]}
+    except:
+        pass
+
+    return render(request, 'entry_form.html', {'game': game_info})
+

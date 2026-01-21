@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Dodaj wpis</title>
+</head>
+<body>
+    <div class="navbar"><div class="container-fluid"><a class="navbar-brand" href="{% url 'games' %}">Game App</a></div></div>
+
+    <div class="container mt-5" style="max-width: 600px;">
+        <div class="card shadow">
+            <div class="card-header bg-white d-flex align-items-center">
+                <img src="{% static game.boxart %}" style="width: 60px; margin-right: 15px;">
+                <h4 class="mb-0">{{ game.title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="w_trakcie" id="checkPlaying">
+                        <label class="form-check-label" for="checkPlaying">Jestem w trakcie</label>
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="czy_ukonczona" id="checkFinished">
+                        <label class="form-check-label" for="checkFinished">Ukończona</label>
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="sto_procent" id="check100">
+                        <label class="form-check-label" for="check100">Platyna (100%)</label>
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="czy_ulubiona" id="checkFav">
+                        <label class="form-check-label text-warning fw-bold" for="checkFav">★ Dodaj do ulubionych ★</label>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Czas gry [h]</label>
+                        <input type="number" step="0.01" name="czas" class="form-control" placeholder="np. 12.5">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Dodaj!</button>
+                        <a href="{% url 'games' %}" class="btn btn-outline-secondary">Anuluj</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
