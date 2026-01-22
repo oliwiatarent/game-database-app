@@ -634,7 +634,7 @@ def search_game(request):
             with oracledb.connect(user=username, password=password, dsn=cs) as connection:
                 with connection.cursor() as cursor:
                     sql = """
-                        SELECT id, tytul, okladka, deweloper, data_wydania 
+                        SELECT id, tytul, okladka, data_wydania 
                         FROM Gry 
                         WHERE LOWER(tytul) LIKE LOWER(:1)
                         ORDER BY tytul
@@ -646,7 +646,7 @@ def search_game(request):
                             "id": row[0],
                             "title": row[1],
                             "boxart": row[2],
-                            "date": row[4]
+                            "date": row[3]
                         })
         except Exception:
             return render(request, 'error.html')
@@ -780,3 +780,94 @@ def edit_profile(request):
             return render(request, 'edit_profile.html', {'error': 'Błąd zapisu do bazy danych!'})
 
     return render(request, 'edit_profile.html', {'description': current_desc})
+
+
+def search_review(request):
+    query = request.GET.get('q')
+    results = []
+
+    if query:
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    sql = """
+                        SELECT id, tytul, okladka, data_wydania 
+                        FROM Gry 
+                        WHERE LOWER(tytul) LIKE LOWER(:1)
+                        ORDER BY tytul
+                    """
+                    cursor.execute(sql, (f"%{query}%",))
+
+                    for row in cursor:
+                        results.append({
+                            "id": row[0],
+                            "title": row[1],
+                            "boxart": row[2],
+                            "date": row[3]
+                        })
+        except Exception as e:
+            return render(request, 'error.html')
+
+    return render(request, 'search_review.html', {'results': results, 'query': query})
+
+
+def add_review(request, game_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    if request.method == 'POST':
+        ocena = request.POST.get('rating')
+        komentarz = request.POST.get('comment')
+
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    check_sql = "SELECT id FROM Recenzje WHERE ID_Uzytkownika = :1 AND ID_Gry = :2"
+                    cursor.execute(check_sql, (user_id, game_id))
+                    existing_review = cursor.fetchone()
+
+                    # update dla istniejącej recenzji
+                    if existing_review:
+                        review_id = existing_review[0]
+                        sql = """
+                            UPDATE Recenzje 
+                            SET ocena = :1, komentarz = :2, data_wystawienia = CURRENT_TIMESTAMP
+                            WHERE id = :3
+                        """
+                        cursor.execute(sql, (ocena, komentarz, review_id))
+                    else:
+                        sql = """
+                            INSERT INTO Recenzje (ocena, komentarz, ID_Uzytkownika, ID_Gry)
+                            VALUES (:1, :2, :3, :4)
+                        """
+                        cursor.execute(sql, (ocena, komentarz, user_id, game_id))
+
+                    connection.commit()
+
+            return redirect('games')
+
+        except Exception as e:
+            return render(request, 'error.html')
+
+    game_info = {}
+    existing_data = {'rating': '', 'comment': ''}
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT tytul, okladka FROM Gry WHERE id = :1", (game_id,))
+                row = cursor.fetchone()
+                if row:
+                    game_info = {"title": row[0], "boxart": row[1]}
+
+                cursor.execute("SELECT ocena, komentarz FROM Recenzje WHERE ID_Uzytkownika = :1 AND ID_Gry = :2",
+                               (user_id, game_id))
+                review_row = cursor.fetchone()
+                if review_row:
+                    existing_data = {'rating': review_row[0], 'comment': review_row[1]}
+
+    except Exception:
+        return render(request, 'error.html')
+
+    return render(request, 'review_form.html', {'game': game_info, 'review': existing_data})

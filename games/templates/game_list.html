@@ -64,9 +64,10 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h2 class="mb-1">W co ostatnio grałeś?</h2>
-                    <p class="mb-0 text-muted">Dodaj nowy wpis do biblioteki!</p>
+                    <p class="mb-0 text-muted">Dodaj nowy wpis do biblioteki lub oceń grę!</p>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="{% url 'search_review' %}" class="btn btn-primary btn-lg">Nowa recenzja</a>
                     <a href="{% url 'search_game' %}" class="btn btn-primary btn-lg">Nowy wpis</a>
                 </div>
             </div>

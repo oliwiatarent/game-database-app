@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Dodaj recenzję</title>
+</head>
+<body>
+    <div class="navbar"><div class="container-fluid"><a class="navbar-brand" href="{% url 'games' %}">Game App</a></div></div>
+
+    <div class="container mt-5" style="max-width: 600px;">
+        <div class="card shadow">
+            <div class="card-header bg-white d-flex align-items-center">
+                <img src="{% static game.boxart %}" style="width: 60px; margin-right: 15px;">
+                <div>
+                    <h5 class="mb-0">Twoja recenzja</h5>
+                    <small class="text-muted">{{ game.title }}</small>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Twoja ocena [1-10]</label>
+                        <select name="rating" class="form-select form-select-lg" required>
+                            <option value="" disabled {% if not review.rating %}selected{% endif %}>Wybierz ocenę...</option>
+                            <option value="10" {% if review.rating == 10 %}selected{% endif %}>10 - Arcydzieło</option>
+                            <option value="9" {% if review.rating == 9 %}selected{% endif %}>9 - Wspaniała</option>
+                            <option value="8" {% if review.rating == 8 %}selected{% endif %}>8 - Bardzo dobra</option>
+                            <option value="7" {% if review.rating == 7 %}selected{% endif %}>7 - Dobra</option>
+                            <option value="6" {% if review.rating == 6 %}selected{% endif %}>6 - Niezła</option>
+                            <option value="5" {% if review.rating == 5 %}selected{% endif %}>5 - Przeciętna</option>
+                            <option value="4" {% if review.rating == 4 %}selected{% endif %}>4 - Słaba</option>
+                            <option value="3" {% if review.rating == 3 %}selected{% endif %}>3 - Zła</option>
+                            <option value="2" {% if review.rating == 2 %}selected{% endif %}>2 - Bardzo zła</option>
+                            <option value="1" {% if review.rating == 1 %}selected{% endif %}>1 - Tragedia</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Komentarz (opcjonalnie)</label>
+                        <textarea name="comment" class="form-control" rows="5" placeholder="Napisz, co myślisz o tej grze...">{{ review.comment|default:'' }}</textarea>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Opublikuj recenzję</button>
+                        <a href="{% url 'games' %}" class="btn btn-outline-secondary">Anuluj</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
