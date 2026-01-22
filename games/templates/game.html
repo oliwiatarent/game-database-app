@@ -157,5 +157,53 @@
         </table>
     </div>
 
+    <div class="container mt-5 mb-5">
+        <h3 class="mb-4 border-bottom pb-2">Recenzje użytkowników</h3>
+
+        <div class="row">
+            <div class="col-12">
+                {% for review in reviews %}
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <img src="{% static review.user_avatar %}"
+                                     alt="Avatar"
+                                     class="rounded-circle me-3"
+                                     style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #dee2e6;">
+
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1 fw-bold">{{ review.username }}</h5>
+                                        <small class="text-muted">{{ review.date|date:"d.m.Y" }}</small>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <span class="badge bg-warning text-dark border border-warning">
+                                            Ocena: {{ review.rating }}/10
+                                        </span>
+                                    </div>
+
+                                    <p class="card-text">
+                                        {% if review.comment %}
+                                            {{ review.comment }}
+                                        {% else %}
+                                            <em class="text-muted">-</em>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-light text-center border" role="alert">
+                        Ta gra nie ma jeszcze żadnych recenzji. Oceń ją jako pierwszy!
+                        <br>
+                        <a href="{% url 'search_review' %}" class="btn btn-sm btn-outline-primary mt-2">Dodaj recenzję!</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

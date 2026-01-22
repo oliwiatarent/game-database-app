@@ -88,6 +88,7 @@ def game(request):
     columns = []
     genres_list = []
     platform_list = []
+    reviews_list = []
 
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
@@ -172,6 +173,24 @@ def game(request):
     
                     game["tytul_gry_podstawowej"] = cursor.fetchone()[0]
 
+                sql = """
+                        SELECT r.ocena, r.komentarz, r.data_wystawienia, u.nazwa, u.zdjecie_profilowe
+                        FROM Recenzje r
+                        JOIN Uzytkownicy u ON r.ID_Uzytkownika = u.ID
+                        WHERE r.ID_Gry = :1
+                        ORDER BY r.data_wystawienia DESC
+                """
+                cursor.execute(sql, (id,))
+
+                for row in cursor:
+                    reviews_list.append({
+                        "rating": row[0],
+                        "comment": row[1],
+                        "date": row[2],
+                        "username": row[3],
+                        "user_avatar": row[4]
+                    })
+
     except TypeError as ex:
         return render(request, 'error.html', {
             "information": "Gra o podanym id nie istnieje w bazie danych"
@@ -180,7 +199,8 @@ def game(request):
         return render(request, 'error.html')
 
     return render(request, "game.html", {
-        "game": game
+        "game": game,
+        "reviews": reviews_list
     })
 
 
