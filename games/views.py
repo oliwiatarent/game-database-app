@@ -173,6 +173,15 @@ def game(request):
     
                     game["tytul_gry_podstawowej"] = cursor.fetchone()[0]
 
+                sql = "SELECT AVG(ocena) FROM Recenzje WHERE ID_Gry = :1"
+                cursor.execute(sql, (id,))
+                avg_row = cursor.fetchone()
+
+                if avg_row and avg_row[0] is not None:
+                    game['average_rating'] = round(avg_row[0], 1)
+                else:
+                    game['average_rating'] = "N/A"
+
                 sql = """
                         SELECT r.ocena, r.komentarz, r.data_wystawienia, u.nazwa, u.zdjecie_profilowe
                         FROM Recenzje r
