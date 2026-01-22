@@ -580,6 +580,7 @@ def profile(request):
 
     user_data = {}
     user_games = []
+    user_reviews = []
 
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
@@ -618,11 +619,31 @@ def profile(request):
                         "is_fav": row[3]
                     })
 
+                query_reviews = """
+                    SELECT r.ocena, r.komentarz, r.data_wystawienia, g.tytul, g.okladka, g.id
+                    FROM Recenzje r
+                    JOIN Gry g ON r.ID_Gry = g.ID
+                    WHERE r.ID_Uzytkownika = :1
+                    ORDER BY r.data_wystawienia DESC
+                    FETCH FIRST 3 ROWS ONLY
+                                """
+                cursor.execute(query_reviews, (user_id,))
+
+                for row in cursor:
+                    user_reviews.append({
+                        "rating": row[0],
+                        "comment": row[1],
+                        "date": row[2],
+                        "game_title": row[3],
+                        "game_boxart": row[4],
+                        "game_id": row[5]
+                    })
+
     except Exception as e:
         print(f"{e}")
         return render(request, 'error.html')
 
-    return render(request, 'profile.html', {'user': user_data, 'games': user_games})
+    return render(request, 'profile.html', {'user': user_data, 'games': user_games, 'reviews': user_reviews})
 
 
 def search_game(request):
