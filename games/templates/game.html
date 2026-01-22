@@ -19,10 +19,12 @@
 
             <a class="navbar-brand" href="{% url 'games' %}">Game App</a>
 
+            {% if request.session.is_admin == 1 %}
             <div class="navbar-nav">
                 <a class="nav-link" href="{% url 'game_form' 'edit' %}?id={{ game.id }}">Edytuj</a>
                 <a class="nav-link" href="{% url 'delete_game' game.id %}">Usuń</a>
             </div>
+            {% endif %}
 
         </div>
     </nav>
