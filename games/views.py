@@ -581,7 +581,7 @@ def profile(request):
                     }
 
                 query_games = """
-                    SELECT g.id, g.tytul, g.okladka
+                    SELECT g.id, g.tytul, g.okladka, w.czy_ulubiona
                     FROM Gry g
                     JOIN Wpisy w ON g.id = w.ID_Gry
                     WHERE w.ID_Uzytkownika = :1
@@ -593,7 +593,8 @@ def profile(request):
                     user_games.append({
                         "id": row[0],
                         "title": row[1],
-                        "boxart": row[2]
+                        "boxart": row[2],
+                        "is_fav": row[3]
                     })
 
     except Exception as e:

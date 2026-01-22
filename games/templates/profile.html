@@ -41,17 +41,26 @@
                 </div>
 
                 <div class="games-list" style="justify-content: center; margin-bottom: 20px;">
-                    {% for game in games %}
-                        <a href="{% url 'game' %}?id={{ game.id }}" class="text-decoration-none">
-                            <img src="{% static game.boxart %}"
-                                 alt="{{ game.title }}"
-                                 class="games-list-img"
-                                 title="{{ game.title }}">
-                        </a>
-                    {% empty %}
-                        <p class="text-muted fst-italic mt-3">Nie dodano jeszcze żadnych wpisów.</p>
-                    {% endfor %}
-                </div>
+    {% for game in games %}
+        <a href="{% url 'game' %}?id={{ game.id }}" class="text-decoration-none position-relative d-inline-block m-2">
+
+            <img src="{% static game.boxart %}"
+                 alt="{{ game.title }}"
+                 class="games-list-img"
+                 title="{{ game.title }}">
+
+            {% if game.is_fav == 1 %}
+                <span class="position-absolute end-0 text-warning"
+                      style="font-size: 1.5rem; margin-right: 5px; margin-top: 5px;"
+                      title="Ulubiona">★
+                </span>
+            {% endif %}
+
+        </a>
+        {% empty %}
+            <p class="text-muted fst-italic mt-3">Nie dodano jeszcze żadnych wpisów.</p>
+        {% endfor %}
+    </div>
 
             </div>
         </div>
