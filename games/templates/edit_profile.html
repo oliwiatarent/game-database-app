@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Edycja profilu</title>
+</head>
+<body>
+    <div class="navbar"><div class="container-fluid"><a class="navbar-brand" href="{% url 'games' %}">Game App</a></div></div>
+
+    <div class="container mt-5" style="max-width: 600px;">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mb-0 text-center">Edytuj profil</h3>
+            </div>
+            <div class="card-body">
+
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Twój opis</label>
+                        <textarea name="description" class="form-control" rows="4">{{ description }}</textarea>
+                        <div class="form-text">Napisz coś o sobie, np. jakie gatunki gier lubisz.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Zdjęcie profilowe</label>
+                        <input type="file" name="avatar" class="form-control" accept="image/*">
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nowe hasło</label>
+                        <input type="password" name="password" class="form-control">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Powtórz nowe hasło</label>
+                        <input type="password" name="confirm_password" class="form-control">
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-center">
+                        <a href="{% url 'profile' %}" class="btn btn-outline-secondary me-md-2">Anuluj</a>
+                        <button type="submit" class="btn btn-primary px-4">Zapisz zmiany!</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

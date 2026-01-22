@@ -35,6 +35,27 @@ def process_file(boxart):
     return 'img/boxart/' + filename
 
 
+def process_avatar(avatar):
+    upload_folder = os.path.join(settings.MEDIA_ROOT, 'avatars')
+    static_folder = os.path.join(settings.BASE_DIR, 'static', 'img', 'avatars')
+    os.makedirs(upload_folder, exist_ok=True)
+    os.makedirs(static_folder, exist_ok=True)
+    filename = avatar.name
+    file_path = os.path.join(upload_folder, filename)
+    destination = os.path.join(static_folder, filename)
+
+    with open(file_path, 'wb+') as f:
+        for chunk in avatar.chunks():
+            f.write(chunk)
+
+    shutil.copy(file_path, destination)
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    return 'img/avatars/' + filename
+
+
 def game_list(request):
 
     games_list = []
@@ -693,3 +714,69 @@ def add_entry(request, game_id):
 
     return render(request, 'entry_form.html', {'game': game_info})
 
+
+def edit_profile(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    current_desc = ""
+    current_avatar = ""
+    current_password_hash = ""
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT opis, zdjecie_profilowe, haslo FROM Uzytkownicy WHERE ID = :1", (user_id,))
+                row = cursor.fetchone()
+                if row:
+                    current_desc = row[0]
+                    current_avatar = row[1]
+                    current_password_hash = row[2]
+    except Exception as e:
+        print(f"Błąd pobierania profilu!: {e}")
+        return render(request, 'error.html')
+
+    if request.method == 'POST':
+        new_desc = request.POST.get('description')
+        new_avatar_file = request.FILES.get('avatar')
+        new_password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_avatar_file:
+            final_avatar = process_avatar(new_avatar_file)
+        else:
+            final_avatar = current_avatar
+
+        if new_password:
+            if new_password != confirm_password:
+                return render(request, 'edit_profile.html', {
+                    'error': 'Nowe hasła nie są identyczne!',
+                    'description': current_desc
+                })
+            final_password = make_password(new_password)
+        else:
+            final_password = current_password_hash
+
+        if new_desc is None:
+            new_desc = current_desc
+
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    sql = """
+                        UPDATE Uzytkownicy 
+                        SET opis = :1, zdjecie_profilowe = :2, haslo = :3
+                        WHERE ID = :4
+                    """
+                    cursor.execute(sql, (new_desc, final_avatar, final_password, user_id))
+                    connection.commit()
+
+            request.session['user_avatar'] = final_avatar
+            return redirect('profile')
+
+        except Exception as e:
+            print(f"{e}")
+            return render(request, 'edit_profile.html', {'error': 'Błąd zapisu do bazy danych!'})
+
+    return render(request, 'edit_profile.html', {'description': current_desc})
