@@ -602,10 +602,18 @@ def logout_user(request):
     return redirect('games')
 
 
-def profile(request):
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('login')
+def profile(request, user_id=None):
+    viewer_id = request.session.get('user_id')
+    if user_id:
+        target_id = user_id
+    else:
+        if viewer_id:
+            target_id = viewer_id
+            is_owner = 1
+        else:
+            return redirect('login')
+    # tu żeby zawsze był zainicjalizowany
+    is_owner = (viewer_id == target_id)
 
     user_data = {}
     user_games = []
@@ -620,7 +628,7 @@ def profile(request):
                     FROM Uzytkownicy 
                     WHERE ID = :1
                 """
-                cursor.execute(query_user, (user_id,))
+                cursor.execute(query_user, (target_id,))
                 result = cursor.fetchone()
 
                 if result:
@@ -639,7 +647,7 @@ def profile(request):
                     WHERE w.ID_Uzytkownika = :1
                     ORDER BY g.tytul
                 """
-                cursor.execute(query_games, (user_id,))
+                cursor.execute(query_games, (target_id,))
 
                 for row in cursor:
                     user_games.append({
@@ -657,7 +665,7 @@ def profile(request):
                     ORDER BY r.data_wystawienia DESC
                     FETCH FIRST 3 ROWS ONLY
                                 """
-                cursor.execute(query_reviews, (user_id,))
+                cursor.execute(query_reviews, (target_id,))
 
                 for row in cursor:
                     user_reviews.append({
@@ -676,7 +684,7 @@ def profile(request):
                     WHERE l.ID_Uzytkownika = :1
                     ORDER BY l.data_utworzenia DESC
                 """
-                cursor.execute(query_lists, (user_id,))
+                cursor.execute(query_lists, (target_id,))
 
                 raw_lists = cursor.fetchall()
 
@@ -710,7 +718,7 @@ def profile(request):
         print(f"{e}")
         return render(request, 'error.html')
 
-    return render(request, 'profile.html', {'user': user_data, 'games': user_games, 'reviews': user_reviews, 'lists': user_lists})
+    return render(request, 'profile.html', {'user': user_data, 'games': user_games, 'reviews': user_reviews, 'lists': user_lists, 'is_owner': is_owner})
 
 
 def search_game(request):

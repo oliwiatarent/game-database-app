@@ -12,8 +12,10 @@
     <div class="container">
         <div class="card shadow mx-auto" style="max-width: 800px;">
             <div class="card-body text-center">
+                {% if is_owner %}
                 <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-3">
                     Edytuj</a>
+                {% endif %}
 
                 <img src="{% static user.avatar %}"
                      alt="Avatar"
@@ -87,7 +89,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mt-4 px-3">
                     <h5 class="mb-0">Listy</h5>
-                    <a href="{% url 'create_list' %}" class="btn btn-sm btn-outline-success">Stwórz listę!</a>
+                    {% if is_owner %}<a href="{% url 'create_list' %}" class="btn btn-sm btn-outline-success">Stwórz listę!</a>{% endif %}
                 </div>
 
                 <div class="row px-3 mt-3">
