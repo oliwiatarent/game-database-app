@@ -639,6 +639,8 @@ def profile(request, user_id=None):
                         "opis": result[3],
                         "data_zalozenia": result[4]
                     }
+                game_count = cursor.callfunc('PoliczGryUzytkownika', oracledb.NUMBER, [target_id])
+                user_data['game_count'] = int(game_count) if game_count else 0
 
                 query_games = """
                     SELECT g.id, g.tytul, g.okladka, w.czy_ulubiona
