@@ -108,3 +108,12 @@ table, th, td {
 .navbar {
     margin: 0 3% 0 3%;
 }
+
+.list-card-link {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.list-card-link:hover {
+    transform: translateY(-5px);
+    -webkit-filter: brightness(95%);
+}
