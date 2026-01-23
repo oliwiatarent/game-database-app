@@ -106,7 +106,7 @@ table, th, td {
 }
 
 .navbar {
-    margin: 0 3% 0 3%;
+    margin: 0;
 }
 
 .list-card-link {
@@ -116,4 +116,16 @@ table, th, td {
 .list-card-link:hover {
     transform: translateY(-5px);
     -webkit-filter: brightness(95%);
+}
+
+@media (min-width: 1000px) {
+    .navbar-centered-form {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        max-width: 800px;
+        margin: 0;
+    }
 }

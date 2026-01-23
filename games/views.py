@@ -1085,3 +1085,54 @@ def remove_game_from_list(request, list_id, game_id):
         print(f"{e}")
         pass
     return redirect('list_details', list_id=list_id)
+
+
+def global_search(request):
+    query = request.GET.get('q')
+    found_games = []
+    found_users = []
+
+    if query:
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    sql_games = """
+                        SELECT id, tytul, okladka, data_wydania 
+                        FROM Gry 
+                        WHERE LOWER(tytul) LIKE LOWER(:1)
+                        ORDER BY tytul
+                        FETCH FIRST 10 ROWS ONLY
+                    """
+                    cursor.execute(sql_games, (f"%{query}%",))
+                    for row in cursor:
+                        found_games.append({
+                            "id": row[0],
+                            "title": row[1],
+                            "boxart": row[2],
+                            "date": row[3]
+                        })
+
+                    sql_users = """
+                        SELECT id, nazwa, zdjecie_profilowe 
+                        FROM Uzytkownicy 
+                        WHERE LOWER(nazwa) LIKE LOWER(:1)
+                        ORDER BY nazwa
+                        FETCH FIRST 10 ROWS ONLY
+                    """
+                    cursor.execute(sql_users, (f"%{query}%",))
+                    for row in cursor:
+                        found_users.append({
+                            "id": row[0],
+                            "name": row[1],
+                            "avatar": row[2]
+                        })
+
+        except Exception as e:
+            print(f"{e}")
+            return render(request, 'error.html')
+
+    return render(request, 'global_search.html', {
+        'games': found_games,
+        'users': found_users,
+        'query': query
+    })

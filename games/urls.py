@@ -17,6 +17,7 @@ urlpatterns = [
     path('profile/<int:user_id>/', views.profile, name='profile_view'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('search_game/', views.search_game, name='search_game'),
+    path('search/', views.global_search, name='global_search'),
     path('add_entry/<int:game_id>/', views.add_entry, name='add_entry'),
     path('search_review/', views.search_review, name='search_review'),
     path('add_review/<int:game_id>/', views.add_review, name='add_review'),

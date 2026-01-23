@@ -3,11 +3,47 @@
 <head>
     {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Logowanie</title>
 </head>
 <body>
-    <div class="navbar"><div class="container-fluid"><a class="navbar-brand" href="{% url 'games' %}">Game App</a></div></div>
+    <nav class="navbar navbar-expand-lg bg-light mb-4 shadow-sm w-100 py-2">
+       <div class="container-fluid px-4">
+            <a class="navbar-brand" href="{% url 'games' %}">Game App</a>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <form class="d-flex navbar-centered-form" action="{% url 'global_search' %}" method="GET">
+                    <div class="input-group">
+                        <input class="form-control" type="search" name="q" placeholder="Szukaj gier lub użytkowników..." required>
+                        <button class="btn btn-primary px-3" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="navbar-nav ms-auto align-items-center d-flex gap-2">
+
+                    {% if request.session.user_id %}
+                        <a href="{% url 'profile' %}" class="d-flex align-items-center text-decoration-none text-dark me-2" title="Mój profil">
+                            <img src="{% static request.session.user_avatar %}"
+                                 alt="Avatar"
+                                 class="rounded-circle border"
+                                 style="width: 35px; height: 35px; object-fit: cover; margin-right: 8px;">
+                            <span class="d-none d-lg-inline fw-bold small">{{ request.session.user_name }}</span>
+                        </a>
+
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-2 py-1" style="font-size: 0.85rem;">Wyloguj</a>
+
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-sm px-2 py-1" style="font-size: 0.85rem;">Zaloguj się</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm px-2 py-1" style="font-size: 0.85rem;">Zarejestruj</a>
+                    {% endif %}
+
+                </div>
+            </div>
+       </div>
+    </nav>
 
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">
