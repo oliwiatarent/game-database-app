@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>{{ list.name }}</title>
+</head>
+<body>
+    <div class="navbar"><div class="container-fluid"><a class="navbar-brand" href="{% url 'games' %}">Game App</a></div></div>
+
+    <div class="container mt-4 mb-5">
+        <div class="p-4 rounded shadow-sm" style="background-color: #e9ecef; border-left: 5px solid #0d6efd;">
+            <h1 class="display-6 fw-bold">{{ list.name }}</h1>
+            <p class="lead text-muted">{{ list.desc | default:"Brak opisu." }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'profile' %}" class="btn btn-outline-secondary btn-sm">&larr; Wróć do profilu</a>
+                <span class="badge bg-secondary">{{ games|length }} gier</span>
+            </div>
+        </div>
+
+        {% if is_owner %}
+            <div class="card mb-4">
+                <div class="card-body bg-light">
+                    <h5 class="card-title mb-3">Dodaj grę</h5>
+                    <form method="GET" class="d-flex gap-2">
+                        <input type="text" name="q" class="form-control" placeholder="Wpisz tytuł gry..." value="{{ query|default:'' }}">
+                        <button type="submit" class="btn btn-primary">Szukaj</button>
+                    </form>
+
+                    {% if search_results %}
+                        <div class="list-group mt-3">
+                            {% for res in search_results %}
+                                <div class="list-group-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{% static res.boxart %}" style="width: 40px; height: 55px; object-fit: cover; margin-right: 15px;">
+                                        <strong>{{ res.title }}</strong>
+                                    </div>
+                                    <a href="{% url 'add_game_to_list' list.id res.id %}" class="btn btn-sm btn-success">
+                                        <i class="bi bi-plus-circle"></i> Dodaj
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="list-group">
+            {% for game in games %}
+                <div class="list-group-item list-group-item-action p-3">
+                    <div class="d-flex align-items-center">
+                        <span class="fs-4 text-muted me-3 fw-bold" style="width: 30px;">{{ forloop.counter }}.</span>
+
+                        <a href="{% url 'game' %}?id={{ game.id }}" class="flex-shrink-0">
+                            <img src="{% static game.boxart %}"
+                                 alt="{{ game.title }}"
+                                 style="width: 60px; height: 85px; object-fit: cover; border-radius: 4px;">
+                        </a>
+
+                        <div class="ms-3 flex-grow-1">
+                            <h5 class="mb-1">
+                                <a href="{% url 'game' %}?id={{ game.id }}" class="text-decoration-none text-dark">{{ game.title }}</a>
+                            </h5>
+                            <small class="text-muted">Dodano: {{ game.added_date|date:"d.m.Y" }}</small>
+                        </div>
+
+                        {% if is_owner %}
+                            <a href="{% url 'remove_game_from_list' list.id game.id %}"
+                               class="btn btn-outline-danger btn-sm ms-3"
+                               onclick="return confirm('Czy na pewno chcesz usunąć tę grę z listy?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-5 text-muted border rounded bg-light">
+                    Ta lista jest pusta. Użyj wyszukiwarki powyżej, aby dodać gry.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

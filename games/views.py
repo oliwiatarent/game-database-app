@@ -610,6 +610,7 @@ def profile(request):
     user_data = {}
     user_games = []
     user_reviews = []
+    user_lists = []
 
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
@@ -668,11 +669,48 @@ def profile(request):
                         "game_id": row[5]
                     })
 
+                query_lists = """
+                    SELECT l.id, l.nazwa, l.opis, l.data_utworzenia,
+                           (SELECT COUNT(*) FROM Gry_w_liscie gl WHERE gl.ID_Listy = l.ID) as liczba_gier
+                    FROM Listy l
+                    WHERE l.ID_Uzytkownika = :1
+                    ORDER BY l.data_utworzenia DESC
+                """
+                cursor.execute(query_lists, (user_id,))
+
+                raw_lists = cursor.fetchall()
+
+                for row in raw_lists:
+                    list_id = row[0]
+                    list_obj = {
+                        "id": list_id,
+                        "name": row[1],
+                        "desc": row[2],
+                        "date": row[3],
+                        "count": row[4],
+                        "previews": []  # na okładki
+                    }
+
+                    query_previews = """
+                        SELECT g.okladka 
+                        FROM Gry g
+                        JOIN Gry_w_liscie gl ON g.ID = gl.ID_Gry
+                        WHERE gl.ID_Listy = :1
+                        ORDER BY gl.data_dodania DESC
+                        FETCH FIRST 5 ROWS ONLY
+                    """
+                    cursor.execute(query_previews, (list_id,))
+
+                    for row in cursor:
+                        list_obj["previews"].append(row[0])
+
+                    user_lists.append(list_obj)
+
     except Exception as e:
         print(f"{e}")
         return render(request, 'error.html')
 
-    return render(request, 'profile.html', {'user': user_data, 'games': user_games, 'reviews': user_reviews})
+    return render(request, 'profile.html', {'user': user_data, 'games': user_games, 'reviews': user_reviews, 'lists': user_lists})
 
 
 def search_game(request):
@@ -921,3 +959,119 @@ def add_review(request, game_id):
         return render(request, 'error.html')
 
     return render(request, 'review_form.html', {'game': game_info, 'review': existing_data})
+
+
+def create_list(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    if request.method == 'POST':
+        nazwa = request.POST.get('name')
+        opis = request.POST.get('description')
+
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    # RETURNING ID INTO do szybkiego pobrania ID nowej listy
+                    id_var = cursor.var(int)
+                    sql = """
+                        INSERT INTO Listy (nazwa, opis, ID_Uzytkownika)
+                        VALUES (:1, :2, :3)
+                        RETURNING ID INTO :4
+                    """
+                    cursor.execute(sql, (nazwa, opis, user_id, id_var))
+                    new_list_id = id_var.getvalue()[0]
+                    connection.commit()
+
+            return redirect('list_details', list_id=new_list_id)
+        except Exception as e:
+            print(f"{e}")
+            return render(request, 'error.html')
+
+    return render(request, 'list_form.html')
+
+
+def list_details(request, list_id):
+    user_id = request.session.get('user_id')
+
+    list_data = {}
+    list_games = []
+    search_results = []
+    query = request.GET.get('q')
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT nazwa, opis, ID_Uzytkownika FROM Listy WHERE ID = :1", (list_id,))
+                row = cursor.fetchone()
+                if not row:
+                    return render(request, 'error.html')
+
+                list_data = {"id": list_id, "name": row[0], "desc": row[1], "owner_id": row[2]}
+
+                sql = """
+                    SELECT g.id, g.tytul, g.okladka, gl.data_dodania
+                    FROM Gry g
+                    JOIN Gry_w_liscie gl ON g.ID = gl.ID_Gry
+                    WHERE gl.ID_Listy = :1
+                    ORDER BY gl.data_dodania DESC
+                """
+                cursor.execute(sql, (list_id,))
+                for r in cursor:
+                    list_games.append({"id": r[0], "title": r[1], "boxart": r[2], "added_date": r[3]})
+
+                if user_id == list_data['owner_id'] and query:
+                    sql_search = """
+                        SELECT id, tytul, okladka FROM Gry 
+                        WHERE LOWER(tytul) LIKE LOWER(:1) 
+                        AND id NOT IN (SELECT ID_Gry FROM Gry_w_liscie WHERE ID_Listy = :2)
+                        FETCH FIRST 5 ROWS ONLY
+                    """
+                    cursor.execute(sql_search, (f"%{query}%", list_id))
+                    for r in cursor:
+                        search_results.append({"id": r[0], "title": r[1], "boxart": r[2]})
+
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html')
+
+    return render(request, 'list_details.html', {
+        'list': list_data,
+        'games': list_games,
+        'search_results': search_results,
+        'query': query,
+        'is_owner': (user_id == list_data['owner_id'])
+    })
+
+
+def add_game_to_list(request, list_id, game_id):
+    user_id = request.session.get('user_id')
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT ID_Uzytkownika FROM Listy WHERE ID = :1", (list_id,))
+                row = cursor.fetchone()
+                if row and row[0] == user_id:
+                    cursor.execute("INSERT INTO Gry_w_liscie (ID_Gry, ID_Listy) VALUES (:1, :2)", (game_id, list_id))
+                    connection.commit()
+    except Exception as e:
+        print(f"{e}")
+        pass
+    return redirect('list_details', list_id=list_id)
+
+
+def remove_game_from_list(request, list_id, game_id):
+    user_id = request.session.get('user_id')
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT ID_Uzytkownika FROM Listy WHERE ID = :1", (list_id,))
+                row = cursor.fetchone()
+                if row and row[0] == user_id:
+                    cursor.execute("DELETE FROM Gry_w_liscie WHERE ID_Gry = :1 AND ID_Listy = :2", (game_id, list_id))
+                    connection.commit()
+    except Exception as e:
+        print(f"{e}")
+        pass
+    return redirect('list_details', list_id=list_id)
