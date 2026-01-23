@@ -46,7 +46,7 @@
     </nav>
 
     <div class="container mt-5">
-        <h2 class="mb-4">Wyniki dla: <span class="text-primary">"{{ query }}"</span></h2>
+        <h2 class="mb-4">Wyniki dla: <span class="small fst-italic">"{{ query }}"</span></h2>
 
         <form action="{% url 'global_search' %}" method="GET" class="d-flex gap-2 mb-5">
             <input type="text" name="q" class="form-control form-control-lg" placeholder="Szukaj gier lub użytkowników..." value="{{ query|default:'' }}">
