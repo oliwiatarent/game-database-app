@@ -236,7 +236,7 @@
                     <div class="alert alert-light text-center border" role="alert">
                         Ta gra nie ma jeszcze żadnych recenzji. Oceń ją jako pierwszy!
                         <br>
-                        <a href="{% url 'search_review' %}" class="btn btn-sm btn-outline-primary mt-2">Dodaj recenzję!</a>
+                        <a href="{% url 'add_entry' game.id %}" class="btn btn-sm btn-outline-primary mt-2">Dodaj recenzję</a>
                     </div>
                 {% endfor %}
             </div>
