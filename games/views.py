@@ -766,7 +766,7 @@ def add_entry(request, game_id):
         czas = 0.0
         if czas_r:
             try:
-                czas = float(czas)
+                czas = float(czas_r.replace(',', '.'))
             except ValueError:
                 czas = 0.0
 
