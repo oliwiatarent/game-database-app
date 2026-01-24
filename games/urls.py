@@ -24,5 +24,7 @@ urlpatterns = [
     path('create_list/', views.create_list, name='create_list'),
     path('list/<int:list_id>/', views.list_details, name='list_details'),
     path('list/<int:list_id>/add/<int:game_id>/', views.add_game_to_list, name='add_game_to_list'),
-    path('list/<int:list_id>/remove/<int:game_id>/', views.remove_game_from_list, name='remove_game_from_list')
+    path('list/<int:list_id>/remove/<int:game_id>/', views.remove_game_from_list, name='remove_game_from_list'),
+    path('add_friend/<int:friend_id>/', views.add_friend, name='add_friend'),
+    path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend')
 ]

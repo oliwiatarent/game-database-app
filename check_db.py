@@ -93,5 +93,11 @@ try:
             for row in rows:
                 print(f"Gra ID: {row[0]} Platforma: {row[1]}")
 
+            print("\n--- TABELA: ZNAJOMOSCI ---")
+            cursor.execute("SELECT ID_Uzytkownik1, ID_Uzytkownik2 FROM Znajomosci")
+            rows = cursor.fetchall()
+            if not rows: print("brak.")
+            for row in rows:
+                print(f"ID: {row[0]} <-> ID: {row[1]}")
 except Exception as e:
     print(f"{e}")

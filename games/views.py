@@ -609,11 +609,27 @@ def profile(request, user_id=None):
     else:
         if viewer_id:
             target_id = viewer_id
-            is_owner = 1
         else:
             return redirect('login')
     # tu żeby zawsze był zainicjalizowany
     is_owner = (viewer_id == target_id)
+    is_friend = False
+
+    if viewer_id and not is_owner:
+        try:
+            with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+                with connection.cursor() as cursor:
+                    # słownik bo kursor chciał 4 zmienne
+                    sql = """
+                        SELECT count(*) FROM Znajomosci 
+                        WHERE (ID_Uzytkownik1 = :u1 AND ID_Uzytkownik2 = :u2) 
+                           OR (ID_Uzytkownik1 = :u2 AND ID_Uzytkownik2 = :u1)
+                    """
+                    cursor.execute(sql, {'u1': viewer_id, 'u2': target_id})
+                    if cursor.fetchone()[0] > 0:
+                        is_friend = True
+        except Exception as e:
+            print(f"{e}")
 
     user_data = {}
     user_games = []
@@ -633,6 +649,7 @@ def profile(request, user_id=None):
 
                 if result:
                     user_data = {
+                        "id": target_id,  # do znajomości
                         "nazwa": result[0],
                         "email": result[1],
                         "avatar": result[2],
@@ -720,7 +737,14 @@ def profile(request, user_id=None):
         print(f"{e}")
         return render(request, 'error.html')
 
-    return render(request, 'profile.html', {'user': user_data, 'games': user_games, 'reviews': user_reviews, 'lists': user_lists, 'is_owner': is_owner})
+    return render(request, 'profile.html', {
+        'user': user_data,
+        'games': user_games,
+        'reviews': user_reviews,
+        'lists': user_lists,
+        'is_owner': is_owner,
+        'is_friend': is_friend
+    })
 
 
 def search_game(request):
@@ -1136,3 +1160,37 @@ def global_search(request):
         'users': found_users,
         'query': query
     })
+
+
+def add_friend(request, friend_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.callproc('DodajZnajomego', [user_id, friend_id])
+                connection.commit()
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html')
+
+    return redirect('profile_view', user_id=friend_id)
+
+
+def remove_friend(request, friend_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.callproc('UsunZnajomego', [user_id, friend_id])
+                connection.commit()
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html')
+
+    return redirect('profile_view', user_id=friend_id)

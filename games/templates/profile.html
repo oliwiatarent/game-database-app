@@ -70,6 +70,22 @@
                     Edytuj</a>
                 {% endif %}
 
+                {% if request.session.user_id and not is_owner %}
+                    {% if is_friend %}
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-success me-2"><i class="bi bi-people-fill"></i> Znajomi</span>
+                            <a href="{% url 'remove_friend' user.id %}" class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Czy na pewno chcesz usunąć tę osobę ze znajomych?')">
+                                <i class="bi bi-person-dash"></i> Usuń
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'add_friend' user.id %}" class="btn btn-sm btn-primary position-absolute top-0 end-0 m-3">
+                            <i class="bi bi-person-plus"></i> Dodaj znajomego
+                        </a>
+                    {% endif %}
+                {% endif %}
+
                 <img src="{% static user.avatar %}"
                      alt="Avatar"
                      class="rounded-circle mb-3"

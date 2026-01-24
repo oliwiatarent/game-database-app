@@ -77,6 +77,30 @@ BEGIN
 END DodajZnajomego;
 
 
+CREATE OR REPLACE PROCEDURE UsunZnajomego
+    (pIdUzytkownika1 IN Uzytkownicy.ID%TYPE,
+    pIdUzytkownika2 IN Uzytkownicy.ID%TYPE) IS
+    vId1 INTEGER;
+    vId2 INTEGER;
+    vLiczbaWpisow INTEGER;
+BEGIN
+    IF pIdUzytkownika1 = pIdUzytkownika2 THEN
+        RETURN;
+    END IF;
+
+    IF pIdUzytkownika1 < pIdUzytkownika2 THEN
+        vId1 := pIdUzytkownika1;
+        vId2 := pIdUzytkownika2;
+    ELSE
+        vId1 := pIdUzytkownika2;
+        vId2 := pIdUzytkownika1;
+    END IF;
+
+    DELETE FROM Znajomosci
+    WHERE ID_Uzytkownik1 = vId1 AND ID_Uzytkownik2 = vId2;
+END UsunZnajomego;
+
+
 CREATE TRIGGER PoAktualizacjiFranczyzy
     AFTER UPDATE ON Franczyzy
 BEGIN
