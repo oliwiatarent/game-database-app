@@ -85,12 +85,6 @@
     </div>
     {% endif %}
 
-    <div class="navbar">
-        <div class="container-fluid">
-            <h3>Wszystkie gry</h3>
-        </div>
-    </div>
-
     <div class="games-list">
         {% for game in games %}
             <a href="{% url 'game' %}?id={{ game.id }}">
