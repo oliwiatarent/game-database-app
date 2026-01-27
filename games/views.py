@@ -853,7 +853,7 @@ def add_entry(request, game_id):
                 cursor.execute("SELECT tytul, okladka FROM Gry WHERE id = :1", (game_id,))
                 row = cursor.fetchone()
                 if row:
-                    game_info = {"title": row[0], "boxart": row[1]}
+                    game_info = {"id": game_id, "title": row[0], "boxart": row[1]}
 
                 sql = """
                     SELECT w_trakcie, czy_ukonczona, sto_procent, czy_ulubiona, czas 
@@ -876,6 +876,24 @@ def add_entry(request, game_id):
         pass
 
     return render(request, 'entry_form.html', {'game': game_info, 'entry': entry_data})
+
+
+def delete_entry(request, game_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                sql = "DELETE FROM Wpisy WHERE ID_Uzytkownika = :1 AND ID_Gry = :2"
+                cursor.execute(sql, (user_id, game_id))
+                connection.commit()
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html')
+
+    return redirect('profile')
 
 
 def edit_profile(request):

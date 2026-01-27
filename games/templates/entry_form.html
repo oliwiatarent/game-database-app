@@ -87,6 +87,15 @@
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success btn-lg">Dodaj!</button>
                         <a href="{% url 'games' %}" class="btn btn-outline-secondary">Anuluj</a>
+
+                        {% if entry %}
+                            <hr class="my-2">
+                            <a href="{% url 'delete_entry' game.id %}"
+                               class="btn btn-danger"
+                               onclick="return confirm('Czy na pewno chcesz usunąć tę grę ze swojej biblioteki? Ta operacja jest nieodwracalna!')">
+                                <i class="bi bi-trash"></i> Usuń wpis z biblioteki
+                            </a>
+                        {% endif %}
                     </div>
                 </form>
             </div>
