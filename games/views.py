@@ -325,7 +325,9 @@ def game_form(request, action):
 
                     connection.commit()
         except:
-            return render(request, 'error.html')
+            return render(request, 'error.html', {
+                "information": "Wystąpił błąd podczas zapisywania gry w bazie danych."
+            })
 
         return redirect('games')
 
@@ -424,8 +426,11 @@ def game_form(request, action):
 
                     if len(default_genres) > 0:
                         default_values["genres"] = default_genres
-    except:
-        return render(request, 'error.html')
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas pobierania danych do formularza."
+        })
 
 
     if action == 'edit':
@@ -464,8 +469,11 @@ def add(request, type):
 
                     cursor.execute(sql, (value, ))
                     connection.commit()
-        except:
-            return render(request, 'error.html')
+        except Exception as e:
+            print(f"{e}")
+            return render(request, 'error.html', {
+                "information": f"Wystąpił błąd podczas dodawania elementu do kategorii: {type}."
+            })
 
         return redirect('games')
 
@@ -494,8 +502,11 @@ def delete(request, type):
 
                     cursor.execute(sql, (attribute, ))
                     connection.commit()
-        except:
-            return render(request, 'error.html')
+        except Exception as e:
+            print(f"{e}")
+            return render(request, 'error.html', {
+                "information": f"Wystąpił błąd podczas usuwania elementu z kategorii: {type}."
+            })
 
         return redirect('games')
 
@@ -520,8 +531,11 @@ def delete(request, type):
 
                 for item in cursor:
                     attributes.append(item[0])
-    except:
-        return render(request, 'error.html')
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas pobierania listy elementów do usunięcia."
+        })
 
 
     return render(request, "delete_form.html", {
@@ -543,8 +557,11 @@ def delete_game(request, id):
                 cursor.execute(sql, (id, ))
 
                 connection.commit()
-    except:
-        return render(request, 'error.html')
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas usuwania gry z bazy danych."
+    })
 
     return redirect("games")
 
@@ -670,13 +687,18 @@ def profile(request, user_id=None):
 
                 if result:
                     user_data = {
-                        "id": target_id,  # do znajomości
+                        "id": target_id,
                         "nazwa": result[0],
                         "email": result[1],
                         "avatar": result[2],
                         "opis": result[3],
                         "data_zalozenia": result[4]
                     }
+                else:
+                    return render(request, 'error.html', {
+                        "information": "Użytkownik o podanym ID nie istnieje."
+                    })
+
                 game_count = cursor.callfunc('PoliczGryUzytkownika', oracledb.NUMBER, [target_id])
                 user_data['game_count'] = int(game_count) if game_count else 0
 
@@ -774,7 +796,9 @@ def profile(request, user_id=None):
                         })
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas ładowania profilu użytkownika."
+        })
 
     return render(request, 'profile.html', {
         'user': user_data,
@@ -798,9 +822,13 @@ def delete_profile(request):
                 cursor.execute("DELETE FROM Uzytkownicy WHERE ID = :1", (user_id,))
                 connection.commit()
 
+
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas usuwania konta."
+
+        })
 
     request.session.flush()
     return redirect('games')
@@ -829,8 +857,12 @@ def search_game(request):
                             "boxart": row[2],
                             "date": row[3]
                         })
-        except Exception:
-            return render(request, 'error.html')
+
+        except Exception as e:
+            print(f"{e}")
+            return render(request, 'error.html', {
+                "information": "Wystąpił błąd podczas wyszukiwania gier."
+            })
 
     return render(request, 'search_game.html', {'results': results, 'query': query})
 
@@ -879,7 +911,9 @@ def add_entry(request, game_id):
 
         except Exception as e:
             print(f"{e}")
-            return render(request, 'error.html')
+            return render(request, 'error.html', {
+                "information": "Wystąpił błąd podczas pobierania danych wpisu."
+            })
 
     # do nagłówka
     game_info = {}
@@ -929,7 +963,9 @@ def delete_entry(request, game_id):
                 connection.commit()
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas usuwania wpisu z biblioteki."
+        })
 
     return redirect('profile')
 
@@ -953,8 +989,10 @@ def edit_profile(request):
                     current_avatar = row[1]
                     current_password_hash = row[2]
     except Exception as e:
-        print(f"Błąd pobierania profilu!: {e}")
-        return render(request, 'error.html')
+        print(f"{e}")
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas pobierania danych profilu do edycji."
+        })
 
     if request.method == 'POST':
         new_desc = request.POST.get('description')
@@ -1025,7 +1063,9 @@ def search_review(request):
                             "date": row[3]
                         })
         except Exception as e:
-            return render(request, 'error.html')
+            return render(request, 'error.html', {
+                "information": "Wystąpił błąd podczas wyszukiwania gier do recenzji."
+            })
 
     return render(request, 'search_review.html', {'results': results, 'query': query})
 
@@ -1068,7 +1108,9 @@ def add_review(request, game_id):
 
         except Exception as e:
             print(f"{e}")
-            return render(request, 'error.html')
+            return render(request, 'error.html', {
+                "information": "Wystąpił błąd podczas zapisywania recenzji."
+            })
 
     game_info = {}
     existing_data = None
@@ -1089,7 +1131,9 @@ def add_review(request, game_id):
 
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas pobierania formularza recenzji."
+        })
 
     return render(request, 'review_form.html', {'game': game_info, 'review': existing_data})
 
@@ -1107,7 +1151,9 @@ def delete_review(request, game_id):
                 connection.commit()
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas usuwania recenzji."
+        })
 
     return redirect(f"/game/?id={game_id}")
 
@@ -1138,7 +1184,9 @@ def create_list(request):
             return redirect('list_details', list_id=new_list_id)
         except Exception as e:
             print(f"{e}")
-            return render(request, 'error.html')
+            return render(request, 'error.html', {
+                "information": "Wystąpił błąd podczas tworzenia nowej listy."
+            })
 
     return render(request, 'list_form.html')
 
@@ -1185,7 +1233,9 @@ def list_details(request, list_id):
 
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas pobierania zawartości listy."
+        })
 
     return render(request, 'list_details.html', {
         'list': list_data,
@@ -1247,7 +1297,9 @@ def delete_list(request, list_id):
 
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas usuwania listy."
+        })
 
     return redirect('profile')
 
@@ -1294,7 +1346,9 @@ def global_search(request):
 
         except Exception as e:
             print(f"{e}")
-            return render(request, 'error.html')
+            return render(request, 'error.html', {
+                "information": "Wystąpił błąd podczas wyszukiwania."
+            })
 
     return render(request, 'global_search.html', {
         'games': found_games,
@@ -1315,7 +1369,9 @@ def add_friend(request, friend_id):
                 connection.commit()
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas dodawania znajomego."
+        })
 
     return redirect('profile_view', user_id=friend_id)
 
@@ -1332,6 +1388,8 @@ def remove_friend(request, friend_id):
                 connection.commit()
     except Exception as e:
         print(f"{e}")
-        return render(request, 'error.html')
+        return render(request, 'error.html', {
+            "information": "Wystąpił błąd podczas usuwania znajomego."
+        })
 
     return redirect('profile_view', user_id=friend_id)
