@@ -1209,6 +1209,30 @@ def remove_game_from_list(request, list_id, game_id):
     return redirect('list_details', list_id=list_id)
 
 
+def delete_list(request, list_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT ID_Uzytkownika FROM Listy WHERE ID = :1", (list_id,))
+                row = cursor.fetchone()
+
+                if row and row[0] == user_id:
+                    cursor.execute("DELETE FROM Listy WHERE ID = :1", (list_id,))
+                    connection.commit()
+                else:
+                    return render(request, 'error.html', {'information': 'Nie masz uprawnień do usunięcia tej listy!'})
+
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html')
+
+    return redirect('profile')
+
+
 def global_search(request):
     query = request.GET.get('q')
     found_games = []

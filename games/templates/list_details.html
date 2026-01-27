@@ -50,7 +50,18 @@
             <h1 class="display-6 fw-bold">{{ list.name }}</h1>
             <p class="lead text-muted">{{ list.desc | default:"Brak opisu." }}</p>
             <div class="d-flex justify-content-between align-items-center">
-                <a href="{% url 'profile_view' user_id=list.owner_id %}" class="btn btn-outline-secondary btn-sm">&larr; Wróć do profilu</a>
+                <div>
+                    <a href="{% url 'profile_view' user_id=list.owner_id %}" class="btn btn-outline-secondary btn-sm">&larr; Wróć do profilu</a>
+
+                    {% if is_owner %}
+                        <a href="{% url 'delete_list' list.id %}"
+                           class="btn btn-danger btn-sm ms-2"
+                           onclick="return confirm('Czy na pewno chcesz usunąć całą listę „{{ list.name }}”? Tej operacji nie można cofnąć.')">
+                            <i class="bi bi-trash"></i> Usuń listę
+                        </a>
+                    {% endif %}
+                </div>
+
                 <span class="badge bg-secondary">{{ games|length }} gier</span>
             </div>
         </div>

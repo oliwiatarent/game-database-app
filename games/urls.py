@@ -24,6 +24,7 @@ urlpatterns = [
     path('add_review/<int:game_id>/', views.add_review, name='add_review'),
     path('delete_review/<int:game_id>/', views.delete_review, name='delete_review'),
     path('create_list/', views.create_list, name='create_list'),
+    path('delete_list/<int:list_id>/', views.delete_list, name='delete_list'),
     path('list/<int:list_id>/', views.list_details, name='list_details'),
     path('list/<int:list_id>/add/<int:game_id>/', views.add_game_to_list, name='add_game_to_list'),
     path('list/<int:list_id>/remove/<int:game_id>/', views.remove_game_from_list, name='remove_game_from_list'),
