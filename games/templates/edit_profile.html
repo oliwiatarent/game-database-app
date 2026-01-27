@@ -86,6 +86,21 @@
                         <a href="{% url 'profile' %}" class="btn btn-outline-secondary me-md-2">Anuluj</a>
                         <button type="submit" class="btn btn-primary px-4">Zapisz zmiany!</button>
                     </div>
+
+                    <hr class="my-5">
+
+                    <div class="text-center">
+                        <h4 class="text-danger mb-3">Strefa niebezpieczna</h4>
+                        <p class="text-muted small mb-3">
+                            Usunięcie konta jest nieodwracalne!!!<br>
+                            Wszystkie Twoje gry, recenzje i listy zostaną usunięte!!!!!
+                        </p>
+                        <a href="{% url 'delete_profile' %}"
+                           class="btn btn-outline-danger"
+                           onclick="return confirm('Jesteś pewien? Tej operacji NIE MOŻNA cofnąć. Wszystkie Twoje dane zostaną trwale usunięte!!!')">
+                            <i class="bi bi-person-x-fill"></i> Usuń konto
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>

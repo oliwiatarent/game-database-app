@@ -787,6 +787,25 @@ def profile(request, user_id=None):
     })
 
 
+def delete_profile(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM Uzytkownicy WHERE ID = :1", (user_id,))
+                connection.commit()
+
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html')
+
+    request.session.flush()
+    return redirect('games')
+
+
 def search_game(request):
     query = request.GET.get('q')
     results = []
