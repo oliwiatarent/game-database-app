@@ -206,6 +206,34 @@
                 <hr>
 
                 <div class="text-start mt-4 px-3">
+                    <h5 class="mb-3">Znajomi ({{ friends|length }})</h5>
+                </div>
+
+                <div class="row px-3">
+                    {% for friend in friends %}
+                        <div class="col-6 col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'profile_view' user_id=friend.id %}" class="text-decoration-none text-dark">
+                                <div class="card h-100 shadow-sm border-0 bg-light hover-effect">
+                                    <div class="card-body text-center p-3">
+                                        <img src="{% static friend.avatar %}"
+                                             alt="{{ friend.name }}"
+                                             class="rounded-circle border mb-2"
+                                             style="width: 60px; height: 60px; object-fit: cover;">
+                                        <h6 class="card-title mb-0 text-truncate" title="{{ friend.name }}">
+                                            {{ friend.name }}
+                                        </h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted px-3 fst-italic">Nie dodano żadnych znajomych.</p>
+                    {% endfor %}
+                </div>
+
+                <hr>
+
+                <div class="text-start mt-4 px-3">
                     <h5 class="mb-3">Biblioteka gier</h5>
                 </div>
 

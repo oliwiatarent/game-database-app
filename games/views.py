@@ -635,6 +635,7 @@ def profile(request, user_id=None):
     user_games = []
     user_reviews = []
     user_lists = []
+    user_friends = []
 
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
@@ -733,6 +734,24 @@ def profile(request, user_id=None):
 
                     user_lists.append(list_obj)
 
+                    query_friends = """
+                        SELECT u.id, u.nazwa, u.zdjecie_profilowe
+                        FROM Uzytkownicy u
+                        WHERE u.ID IN (
+                            SELECT ID_Uzytkownik2 FROM Znajomosci WHERE ID_Uzytkownik1 = :1
+                            UNION
+                            SELECT ID_Uzytkownik1 FROM Znajomosci WHERE ID_Uzytkownik2 = :2
+                        )
+                    """
+                    # z union target 2 razy
+                    cursor.execute(query_friends, (target_id, target_id))
+
+                    for row in cursor:
+                        user_friends.append({
+                            "id": row[0],
+                            "name": row[1],
+                            "avatar": row[2]
+                        })
     except Exception as e:
         print(f"{e}")
         return render(request, 'error.html')
@@ -742,6 +761,7 @@ def profile(request, user_id=None):
         'games': user_games,
         'reviews': user_reviews,
         'lists': user_lists,
+        'friends': user_friends,
         'is_owner': is_owner,
         'is_friend': is_friend
     })
