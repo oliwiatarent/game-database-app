@@ -85,7 +85,13 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success btn-lg">Dodaj!</button>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            {% if entry %}
+                                Zapisz zmiany
+                            {% else %}
+                                Dodaj
+                            {% endif %}
+                        </button>
                         <a href="{% url 'game' %}?id={{ game.id }}" class="btn btn-outline-secondary">Anuluj</a>
 
                         {% if entry %}
