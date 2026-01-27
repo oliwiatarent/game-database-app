@@ -183,7 +183,7 @@ def game(request):
 
                 # Przetwarzanie recenzji
                 sql = """
-                        SELECT r.ocena, r.komentarz, r.data_wystawienia, u.nazwa, u.zdjecie_profilowe
+                        SELECT r.ocena, r.komentarz, r.data_wystawienia, u.nazwa, u.zdjecie_profilowe, u.ID
                         FROM Recenzje r
                         JOIN Uzytkownicy u ON r.ID_Uzytkownika = u.ID
                         WHERE r.ID_Gry = :1
@@ -197,7 +197,8 @@ def game(request):
                         "comment": row[1],
                         "date": row[2],
                         "username": row[3],
-                        "user_avatar": row[4]
+                        "user_avatar": row[4],
+                        "user_id": row[5]
                     })
 
     except TypeError as ex:
