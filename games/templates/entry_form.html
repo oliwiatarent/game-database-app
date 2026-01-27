@@ -86,7 +86,7 @@
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success btn-lg">Dodaj!</button>
-                        <a href="{% url 'games' %}" class="btn btn-outline-secondary">Anuluj</a>
+                        <a href="{% url 'game' %}?id={{ game.id }}" class="btn btn-outline-secondary">Anuluj</a>
 
                         {% if entry %}
                             <hr class="my-2">
