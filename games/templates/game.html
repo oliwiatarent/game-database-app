@@ -191,8 +191,20 @@
 
     {% if request.session.user_id %}
         <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'add_entry' game.id %}" class="btn btn-primary btn-lg shadow-sm">Nowy wpis</a>
-            <a href="{% url 'add_review' game.id %}" class="btn btn-outline-primary btn-lg shadow-sm">Nowa recenzja</a>
+            <a href="{% url 'add_entry' game.id %}" class="btn btn-primary btn-lg shadow-sm">
+                {% if user_has_entry %}
+                    Edytuj wpis
+                {% else %}
+                    Nowy wpis
+                {% endif %}
+            </a>
+            <a href="{% url 'add_review' game.id %}" class="btn btn-outline-primary btn-lg shadow-sm">
+                {% if user_has_review %}
+                    Edytuj recenzję
+                {% else %}
+                    Nowa recenzja
+                {% endif %}
+            </a>
         </div>
     {% endif %}
 

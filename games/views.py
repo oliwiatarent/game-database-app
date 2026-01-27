@@ -81,8 +81,12 @@ def game_list(request):
 
 
 def game(request):
-
     id = request.GET.get("id")
+
+    # do modyfikacji przycisków
+    user_id = request.session.get('user_id')
+    user_has_entry = False
+    user_has_review = False
 
     game = {}
     columns = []
@@ -201,6 +205,19 @@ def game(request):
                         "user_id": row[5]
                     })
 
+                if user_id:
+                    # ma wpis
+                    cursor.execute("SELECT count(*) FROM Wpisy WHERE ID_Uzytkownika = :1 AND ID_Gry = :2",
+                                   (user_id, id))
+                    if cursor.fetchone()[0] > 0:
+                        user_has_entry = True
+
+                    # ma recenzję
+                    cursor.execute("SELECT count(*) FROM Recenzje WHERE ID_Uzytkownika = :1 AND ID_Gry = :2",
+                                   (user_id, id))
+                    if cursor.fetchone()[0] > 0:
+                        user_has_review = True
+
     except TypeError as ex:
         return render(request, 'error.html', {
             "information": "Gra o podanym id nie istnieje w bazie danych"
@@ -210,7 +227,9 @@ def game(request):
 
     return render(request, "game.html", {
         "game": game,
-        "reviews": reviews_list
+        "reviews": reviews_list,
+        "user_has_entry": user_has_entry,
+        "user_has_review": user_has_review
     })
 
 
