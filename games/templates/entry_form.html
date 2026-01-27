@@ -56,28 +56,32 @@
                     {% csrf_token %}
 
                     <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="w_trakcie" id="checkPlaying">
+                        <input class="form-check-input" type="checkbox" name="w_trakcie" id="checkPlaying"
+                        {% if entry.w_trakcie %}checked{% endif %}>
                         <label class="form-check-label" for="checkPlaying">Jestem w trakcie</label>
                     </div>
 
                     <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="czy_ukonczona" id="checkFinished">
+                        <input class="form-check-input" type="checkbox" name="czy_ukonczona" id="checkFinished"
+                        {% if entry.czy_ukonczona %}checked{% endif %}>
                         <label class="form-check-label" for="checkFinished">Ukończona</label>
                     </div>
 
                     <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="sto_procent" id="check100">
+                        <input class="form-check-input" type="checkbox" name="sto_procent" id="check100"
+                        {% if entry.sto_procent %}checked{% endif %}>
                         <label class="form-check-label" for="check100">Platyna (100%)</label>
                     </div>
 
                     <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="czy_ulubiona" id="checkFav">
+                        <input class="form-check-input" type="checkbox" name="czy_ulubiona" id="checkFav"
+                        {% if entry.czy_ulubiona %}checked{% endif %}>
                         <label class="form-check-label text-warning fw-bold" for="checkFav">★ Dodaj do ulubionych ★</label>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label">Czas gry [h]</label>
-                        <input type="number" step="0.01" name="czas" class="form-control" placeholder="np. 12.5">
+                        <input type="number" step="0.01" name="czas" class="form-control" placeholder="np. 12.5" value="{{ entry.czas|default:0 }}">
                     </div>
 
                     <div class="d-grid gap-2">

@@ -840,11 +840,13 @@ def add_entry(request, game_id):
             return redirect('profile')
 
         except Exception as e:
-            #print(f"{e}")
+            print(f"{e}")
             return render(request, 'error.html')
 
     # do nagłówka
     game_info = {}
+    entry_data = None
+
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
             with connection.cursor() as cursor:
@@ -852,10 +854,28 @@ def add_entry(request, game_id):
                 row = cursor.fetchone()
                 if row:
                     game_info = {"title": row[0], "boxart": row[1]}
-    except:
+
+                sql = """
+                    SELECT w_trakcie, czy_ukonczona, sto_procent, czy_ulubiona, czas 
+                    FROM Wpisy 
+                    WHERE ID_Uzytkownika = :1 AND ID_Gry = :2
+                """
+                cursor.execute(sql, (user_id, game_id))
+                entry_row = cursor.fetchone()
+
+                if entry_row:
+                    entry_data = {
+                        "w_trakcie": entry_row[0],
+                        "czy_ukonczona": entry_row[1],
+                        "sto_procent": entry_row[2],
+                        "czy_ulubiona": entry_row[3],
+                        "czas": entry_row[4]
+                    }
+    except Exception as e:
+        print(f"{e}")
         pass
 
-    return render(request, 'entry_form.html', {'game': game_info})
+    return render(request, 'entry_form.html', {'game': game_info, 'entry': entry_data})
 
 
 def edit_profile(request):

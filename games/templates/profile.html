@@ -239,7 +239,11 @@
 
                 <div class="games-list" style="justify-content: center; margin-bottom: 20px;">
                     {% for game in games %}
-                     <a href="{% url 'game' %}?id={{ game.id }}" class="text-decoration-none position-relative d-inline-block m-2">
+                         {% if is_owner %}
+                            <a href="{% url 'add_entry' game.id %}" class="text-decoration-none position-relative d-inline-block m-2">
+                         {% else %}
+                            <a href="{% url 'game' %}?id={{ game.id }}" class="text-decoration-none position-relative d-inline-block m-2">
+                         {% endif %}
 
                         <img src="{% static game.boxart %}"
                              alt="{{ game.title }}"
