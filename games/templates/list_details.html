@@ -50,7 +50,7 @@
             <h1 class="display-6 fw-bold">{{ list.name }}</h1>
             <p class="lead text-muted">{{ list.desc | default:"Brak opisu." }}</p>
             <div class="d-flex justify-content-between align-items-center">
-                <a href="{% url 'profile' %}" class="btn btn-outline-secondary btn-sm">&larr; Wróć do profilu</a>
+                <a href="{% url 'profile_view' user_id=list.owner_id %}" class="btn btn-outline-secondary btn-sm">&larr; Wróć do profilu</a>
                 <span class="badge bg-secondary">{{ games|length }} gier</span>
             </div>
         </div>
