@@ -1045,13 +1045,14 @@ def add_review(request, game_id):
 
                     connection.commit()
 
-            return redirect('games')
+            return redirect(f"/game/?id={game_id}")
 
         except Exception as e:
+            print(f"{e}")
             return render(request, 'error.html')
 
     game_info = {}
-    existing_data = {'rating': '', 'comment': ''}
+    existing_data = None
 
     try:
         with oracledb.connect(user=username, password=password, dsn=cs) as connection:
@@ -1059,7 +1060,7 @@ def add_review(request, game_id):
                 cursor.execute("SELECT tytul, okladka FROM Gry WHERE id = :1", (game_id,))
                 row = cursor.fetchone()
                 if row:
-                    game_info = {"title": row[0], "boxart": row[1]}
+                    game_info = {"id": game_id, "title": row[0], "boxart": row[1]}
 
                 cursor.execute("SELECT ocena, komentarz FROM Recenzje WHERE ID_Uzytkownika = :1 AND ID_Gry = :2",
                                (user_id, game_id))
@@ -1067,10 +1068,29 @@ def add_review(request, game_id):
                 if review_row:
                     existing_data = {'rating': review_row[0], 'comment': review_row[1]}
 
-    except Exception:
+    except Exception as e:
+        print(f"{e}")
         return render(request, 'error.html')
 
     return render(request, 'review_form.html', {'game': game_info, 'review': existing_data})
+
+
+def delete_review(request, game_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    try:
+        with oracledb.connect(user=username, password=password, dsn=cs) as connection:
+            with connection.cursor() as cursor:
+                sql = "DELETE FROM Recenzje WHERE ID_Uzytkownika = :1 AND ID_Gry = :2"
+                cursor.execute(sql, (user_id, game_id))
+                connection.commit()
+    except Exception as e:
+        print(f"{e}")
+        return render(request, 'error.html')
+
+    return redirect(f"/game/?id={game_id}")
 
 
 def create_list(request):
